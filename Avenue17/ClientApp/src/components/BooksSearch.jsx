@@ -17,6 +17,7 @@ function AuthorsList({ authors, onListUpdated }) {
     
     const populateAuthors = async () => {
         const data = await fetchAllAuthors();
+
         setAllAuthors(data);
         onListUpdated(selectedAuthors);
     }

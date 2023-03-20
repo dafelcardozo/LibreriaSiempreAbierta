@@ -12,7 +12,6 @@ function CreateEditorial({ onPostEditorial }) {
         const editorial = { name, location, books: [] };
         await postEditorial(editorial);
         onPostEditorial(editorial);
-
     }}>
         <input type="text" value={name} onChange={({ target }) => setName(target.value)} />
         <input type="text" value={location} onChange={({ target }) => setLocation(target.value)} />
