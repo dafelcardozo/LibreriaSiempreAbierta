@@ -1,10 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const postEditorial = async (editorial) => {
-    const response = await axios.post('api/editorials', editorial);
-    return response.data;
-}
+const postEditorial = async (editorial) => (await axios.post('api/editorials', editorial)).data;
 
 function CreateEditorial({ onPostEditorial }) {
     const [name, setName] = useState("");
@@ -25,10 +22,9 @@ function CreateEditorial({ onPostEditorial }) {
 }
 
 export default function Editorials(props) {
-
     const [editorials, setEditorials] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [createEditorialVisible, setCreateEditorialVisible] = useState(true);
+    const [createEditorialVisible, setCreateEditorialVisible] = useState(false);
 
     useEffect(() => {
         populateEditorials();
@@ -66,6 +62,7 @@ export default function Editorials(props) {
                 </tbody>
             </table>)}
         <div>
+            <button onClick={() => setCreateEditorialVisible(true)}>Add</button>
             {createEditorialVisible && <CreateEditorial onPostEditorial={() => {
                 populateEditorials();
             }} />}

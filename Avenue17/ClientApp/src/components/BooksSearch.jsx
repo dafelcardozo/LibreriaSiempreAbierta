@@ -69,7 +69,7 @@ function CreateBookForm({ author, onPostBook }) {
     </form>
 }
 
-export default function BooksSearch({ }) {
+export default function BooksSearch() {
     const [books, setBooks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
@@ -112,7 +112,7 @@ export default function BooksSearch({ }) {
                                 <td>{title}</td>
                                 <td>{synopsis}</td>
                                 <td>{npages}</td>
-                                <td>{authors.map(({ id, name, lastName }) => `${name} ${lastName}`).join(', ')}</td>
+                                <td>{authors.map(({ name, lastName }) => `${name} ${lastName}`).join(', ')}</td>
                                 <td>{editorial}</td>
                             </tr>
                         )}
