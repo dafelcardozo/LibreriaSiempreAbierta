@@ -23,8 +23,8 @@ function AuthorsList({ authors, onListUpdated }) {
 
     useEffect(() => {
         populateAuthors()
-    }, [true]);
-    const removeAuthor = (id) => setSelectedAuthors(selectedAuthors.filter(({ value }) => id != value));
+    }]);
+    const removeAuthor = (id) => setSelectedAuthors(selectedAuthors.filter(({ value }) => id !== value));
     const options = allAuthors.map(({ id, name, lastName }) => ({ value: id, label: `${name} ${lastName}`}) );
     return <>
         <ul>{selectedAuthors.map(({ label, value }) => (<li key={value}>{label} <MDBBtn type='button' color='secondary' onClick={() => removeAuthor(value)}><FontAwesomeIcon icon={faMinus} /></MDBBtn></li>))}</ul>
@@ -47,7 +47,7 @@ function CreateBookForm({ author, onPostBook }) {
 
     useEffect(() => {
         populateEditorials();
-    }, [true]);
+    });
 
     return <form onSubmit={async (e) => {
         e.preventDefault();

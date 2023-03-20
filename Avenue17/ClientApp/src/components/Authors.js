@@ -64,7 +64,8 @@ export function Authors(props) {
     );
 
     return <div>
-                <h1 id="tabelLabel" >Authors</h1>
+        <h1 id="tabelLabel" >Authors</h1>
+        <button onClick={() => setCreateAuthorVisible(true)}>Agregar</button>
         {contents}
         <div>
             {createAuthorVisible && <CreateAuthor onPostAuthor={() => {
