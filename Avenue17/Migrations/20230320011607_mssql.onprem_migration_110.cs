@@ -5,7 +5,7 @@
 namespace Avenue17.Migrations
 {
     /// <inheritdoc />
-    public partial class mssqlonprem_migration_562 : Migration
+    public partial class mssqlonprem_migration_110 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,8 +16,8 @@ namespace Avenue17.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    apellidos = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    nombre = table.Column<string>(type: "nvarchar(45)", maxLength: 45, nullable: false),
+                    apellidos = table.Column<string>(type: "nvarchar(45)", maxLength: 45, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -25,24 +25,24 @@ namespace Avenue17.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "editorials",
+                name: "editoriales",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    location = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    nombre = table.Column<string>(type: "nvarchar(45)", maxLength: 45, nullable: false),
+                    sede = table.Column<string>(type: "nvarchar(45)", maxLength: 45, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_editorials", x => x.Id);
+                    table.PrimaryKey("PK_editoriales", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "libros",
                 columns: table => new
                 {
-                    Isbn = table.Column<int>(type: "int", nullable: false)
+                    Isbn = table.Column<long>(type: "bigint", maxLength: 13, nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     titulo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     sinopsis = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -53,9 +53,9 @@ namespace Avenue17.Migrations
                 {
                     table.PrimaryKey("PK_libros", x => x.Isbn);
                     table.ForeignKey(
-                        name: "FK_libros_editorials_EditorialId",
+                        name: "FK_libros_editoriales_EditorialId",
                         column: x => x.EditorialId,
-                        principalTable: "editorials",
+                        principalTable: "editoriales",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -65,7 +65,7 @@ namespace Avenue17.Migrations
                 columns: table => new
                 {
                     AuthorsId = table.Column<int>(type: "int", nullable: false),
-                    BooksIsbn = table.Column<int>(type: "int", nullable: false)
+                    BooksIsbn = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -108,7 +108,7 @@ namespace Avenue17.Migrations
                 name: "libros");
 
             migrationBuilder.DropTable(
-                name: "editorials");
+                name: "editoriales");
         }
     }
 }

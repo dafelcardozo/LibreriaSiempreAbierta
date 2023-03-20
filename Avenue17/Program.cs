@@ -6,13 +6,13 @@ using System.Linq;
 var builder = WebApplication.CreateBuilder(args);
 var connString = builder.Configuration.GetConnectionString("cadenaLibreria");
 Console.WriteLine($"Cadena de conexion desde la aplicación: {connString}");
-using var db = new BloggingContext();
+using var db = new BooksContext();
 
 
 // Add services to the container.
 
 builder.Services.AddControllersWithViews();
-builder.Services.AddDbContext<BloggingContext>();
+builder.Services.AddDbContext<BooksContext>();
 
 var app = builder.Build();
 

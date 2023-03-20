@@ -1,18 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using Microsoft.Extensions.Configuration;
-using System.Configuration;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
 namespace Avenue17
 {
 
-    public class BloggingContext : DbContext
+    public class BooksContext : DbContext
     {
-        public DbSet<Blog> Blogs { get; set; }
-        public DbSet<Post> Posts { get; set; }
 
         public DbSet<Book> Books { get; set; }
         public DbSet<Author> Author { get; set; }   
@@ -20,15 +14,9 @@ namespace Avenue17
 
         public string DbPath { get; }
 
-        public BloggingContext()
+        public BooksContext()
         {
         }
-        /*
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(ConfigurationManager.ConnectionStrings["BloggingDatabase"].ConnectionString);
-        }
-        */
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
            /*
@@ -48,23 +36,6 @@ namespace Avenue17
 
     }
 
-    public class Blog
-    {
-        public int BlogId { get; set; }
-        public string Url { get; set; }
-
-        public List<Post> Posts { get; } = new();
-    }
-
-    public class Post
-    {
-        public int PostId { get; set; }
-        public string Title { get; set; }
-        public string Content { get; set; }
-
-        public int BlogId { get; set; }
-        public Blog Blog { get; set; }
-    }
 
     [Table("autores")]
     public class Author
@@ -72,8 +43,10 @@ namespace Avenue17
         public int Id { get; set; }
 
         [Column("nombre")]
+        [MaxLength(45)]
         public string Name{ get; set; }
         [Column("apellidos")]
+        [MaxLength(45)]
         public string LastName { get; set; }
 
         public List<Book> Books { get; set; }
@@ -82,10 +55,12 @@ namespace Avenue17
     public class Editorial
     {
         public int Id { get; set; }
-        [Column("name")]
-        public string Nombre { get; set;}
-        [Column("location")]
-        public string Sede { get; set; }
+        [Column("nombre")]
+        [MaxLength(45)]
+        public string Name{ get; set;}
+        [Column("sede")]
+        [MaxLength(45)]
+        public string Location { get; set; }
 
         public List<Book> Books { get; set; }
     }
@@ -93,7 +68,8 @@ namespace Avenue17
     public class Book
     {
         [Key]
-        public int Isbn { get; set; }
+        [MaxLength(13)]
+        public long Isbn { get; set; }
 
         [Column("titulo")]
         public string Title { get; set; }

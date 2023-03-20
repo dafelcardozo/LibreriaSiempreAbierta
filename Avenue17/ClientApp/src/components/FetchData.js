@@ -1,59 +1,79 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-export class FetchData extends Component {
-  static displayName = FetchData.name;
+const postAuthor = async (author) => {
+    const response = await axios.post('api/authors', author);
+    return response.data;
+}
 
-  constructor(props) {
-    super(props);
-    this.state = { forecasts: [], loading: true };
-  }
+function CreateAuthor({ onPostAuthor}) {
+    const [name, setName] = useState("");
+    const [lastName, setLastName] = useState("");
+    
+    return (<form onSubmit={async (e) => {
+        e.preventDefault();
+        const author = { name, lastName, books:[] };
+        await postAuthor(author);
+        onPostAuthor(author);
 
-  componentDidMount() {
-    this.populateWeatherData();
-  }
+    }}>
+        <input type="text" value={name} onChange={({ target }) => setName(target.value)} />
+        <input type="text" value={lastName} onChange={({ target }) => setLastName(target.value)} />
+        <button type="submit" >Crear</button>
+        <button type="button">Cancelar</button>
+    </form>)
+}
 
-  static renderForecastsTable(forecasts) {
-    return (
-      <table className='table table-striped' aria-labelledby="tabelLabel">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Temp. (C)</th>
-            <th>Temp. (F)</th>
-            <th>Summary</th>
-          </tr>
-        </thead>
-        <tbody>
-          {forecasts.map(forecast =>
-            <tr key={forecast.date}>
-              <td>{forecast.date}</td>
-              <td>{forecast.temperatureC}</td>
-              <td>{forecast.temperatureF}</td>
-              <td>{forecast.summary}</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+export function FetchData(props) {
+    
+    const [authors, setAuthors] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [createAuthorVisible, setCreateAuthorVisible] = useState(true);
+
+    useEffect(() => {
+        populateAuthors();
+    }, [loading]);
+
+    const populateAuthors = async () => {
+        const response = await fetch('api/authors');
+        const authors = await response.json();
+        setAuthors(authors);
+        setLoading(false);
+    }
+
+    const renderForecastsTable = () => (
+        <table className='table table-striped' aria-labelledby="tabelLabel">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Last Name</th>
+                    <th>Books</th>
+                </tr>
+            </thead>
+            <tbody>
+                {authors.map(({ id, name, lastName, books }) =>
+                    <tr key={id}>
+                        <td>{id}</td>
+                        <td>{name}</td>
+                        <td>{lastName}</td>
+                        <td>
+                            {books?.map(({ title }) => title).join(", ")}
+                        </td>
+                    </tr>
+                )}
+            </tbody>
+        </table>
     );
-  }
+    let contents = loading? <p><em>Loading...</em></p>: renderForecastsTable();
 
-  render() {
-    let contents = this.state.loading
-      ? <p><em>Loading...</em></p>
-      : FetchData.renderForecastsTable(this.state.forecasts);
-
-    return (
-      <div>
-        <h1 id="tabelLabel" >Weather forecast</h1>
-        <p>This component demonstrates fetching data from the server.</p>
+    return <div>
+                <h1 id="tabelLabel" >Authors</h1>
         {contents}
-      </div>
-    );
-  }
-
-  async populateWeatherData() {
-    const response = await fetch('weatherforecast');
-    const data = await response.json();
-    this.setState({ forecasts: data, loading: false });
-  }
+        <div>
+            {createAuthorVisible && <CreateAuthor onPostAuthor={() => {
+                populateAuthors();
+            }} />}
+        </div>
+            </div>
 }

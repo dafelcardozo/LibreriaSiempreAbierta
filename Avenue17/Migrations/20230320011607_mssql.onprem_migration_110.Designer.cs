@@ -3,16 +3,19 @@ using Avenue17;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
 namespace Avenue17.Migrations
 {
-    [DbContext(typeof(BloggingContext))]
-    partial class BloggingContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(BooksContext))]
+    [Migration("20230320011607_mssql.onprem_migration_110")]
+    partial class mssqlonprem_migration_110
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,8 +29,8 @@ namespace Avenue17.Migrations
                     b.Property<int>("AuthorsId")
                         .HasColumnType("int");
 
-                    b.Property<int>("BooksIsbn")
-                        .HasColumnType("int");
+                    b.Property<long>("BooksIsbn")
+                        .HasColumnType("bigint");
 
                     b.HasKey("AuthorsId", "BooksIsbn");
 
@@ -46,12 +49,14 @@ namespace Avenue17.Migrations
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(45)
+                        .HasColumnType("nvarchar(45)")
                         .HasColumnName("apellidos");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(45)
+                        .HasColumnType("nvarchar(45)")
                         .HasColumnName("nombre");
 
                     b.HasKey("Id");
@@ -59,30 +64,14 @@ namespace Avenue17.Migrations
                     b.ToTable("autores");
                 });
 
-            modelBuilder.Entity("Avenue17.Blog", b =>
-                {
-                    b.Property<int>("BlogId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BlogId"));
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("BlogId");
-
-                    b.ToTable("Blogs");
-                });
-
             modelBuilder.Entity("Avenue17.Book", b =>
                 {
-                    b.Property<int>("Isbn")
+                    b.Property<long>("Isbn")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasMaxLength(13)
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Isbn"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Isbn"));
 
                     b.Property<int>("EditorialId")
                         .HasColumnType("int");
@@ -117,45 +106,21 @@ namespace Avenue17.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Nombre")
+                    b.Property<string>("Location")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("name");
+                        .HasMaxLength(45)
+                        .HasColumnType("nvarchar(45)")
+                        .HasColumnName("sede");
 
-                    b.Property<string>("Sede")
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("location");
+                        .HasMaxLength(45)
+                        .HasColumnType("nvarchar(45)")
+                        .HasColumnName("nombre");
 
                     b.HasKey("Id");
 
-                    b.ToTable("editorials");
-                });
-
-            modelBuilder.Entity("Avenue17.Post", b =>
-                {
-                    b.Property<int>("PostId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PostId"));
-
-                    b.Property<int>("BlogId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("PostId");
-
-                    b.HasIndex("BlogId");
-
-                    b.ToTable("Posts");
+                    b.ToTable("editoriales");
                 });
 
             modelBuilder.Entity("AuthorBook", b =>
@@ -182,22 +147,6 @@ namespace Avenue17.Migrations
                         .IsRequired();
 
                     b.Navigation("Editorial");
-                });
-
-            modelBuilder.Entity("Avenue17.Post", b =>
-                {
-                    b.HasOne("Avenue17.Blog", "Blog")
-                        .WithMany("Posts")
-                        .HasForeignKey("BlogId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Blog");
-                });
-
-            modelBuilder.Entity("Avenue17.Blog", b =>
-                {
-                    b.Navigation("Posts");
                 });
 
             modelBuilder.Entity("Avenue17.Editorial", b =>

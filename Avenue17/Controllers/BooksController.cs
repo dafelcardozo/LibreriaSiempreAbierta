@@ -3,13 +3,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Avenue17.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class BooksController : ControllerBase
     {
-        private readonly BloggingContext _context;
+        private readonly BooksContext _context;
 
-        public BooksController(BloggingContext context)
+        public BooksController(BooksContext context)
         {
             _context = context;
         }
