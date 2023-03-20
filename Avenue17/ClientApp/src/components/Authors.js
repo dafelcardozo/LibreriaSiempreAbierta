@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const postAuthor = async (author) => {
-    const response = await axios.post('api/authors', author);
-    return response.data;
-}
+const postAuthor = async (author) => (await axios.post('api/authors', author)).data;
 
 function CreateAuthor({ onPostAuthor}) {
     const [name, setName] = useState("");

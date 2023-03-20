@@ -57,28 +57,27 @@ namespace Avenue17
         public int Id { get; set; }
         [Column("nombre")]
         [MaxLength(45)]
-        public string Name{ get; set;}
+        public string Name { get; set; } = "";
         [Column("sede")]
         [MaxLength(45)]
-        public string Location { get; set; }
+        public string Location { get; set; } = "";
 
-        public List<Book> Books { get; set; }
+        public List<Book> Books { get; set; }= new List<Book>();
     }
     [Table("libros")]
     public class Book
     {
         [Key]
-        [MaxLength(13)]
         public long Isbn { get; set; }
 
         [Column("titulo")]
-        public string Title { get; set; }
+        public string Title { get; set; } = "";
         [Column("sinopsis")]
-        public string Synopsis { get; set; }
+        public string Synopsis { get; set; } = "";
         [Column("n_paginas")]
-        public string NPages { get; set; }
+        public string NPages { get; set; } = "";
 
-        public List<Author> Authors { get; set; }
+        public List<Author> Authors { get; set; }=new List<Author>();
 
         public Editorial Editorial { get; set; }
     }
