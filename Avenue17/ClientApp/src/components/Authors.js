@@ -24,8 +24,7 @@ function CreateAuthor({ onPostAuthor}) {
     </form>)
 }
 
-export function FetchData(props) {
-    
+export function Authors(props) {
     const [authors, setAuthors] = useState([]);
     const [loading, setLoading] = useState(true);
     const [createAuthorVisible, setCreateAuthorVisible] = useState(true);
@@ -41,7 +40,7 @@ export function FetchData(props) {
         setLoading(false);
     }
 
-    const renderForecastsTable = () => (
+    let contents = loading ? <p><em>Loading...</em></p> : (
         <table className='table table-striped' aria-labelledby="tabelLabel">
             <thead>
                 <tr>
@@ -60,12 +59,12 @@ export function FetchData(props) {
                         <td>
                             {books?.map(({ title }) => title).join(", ")}
                         </td>
+                        <td><button>Add book</button></td>
                     </tr>
                 )}
             </tbody>
         </table>
     );
-    let contents = loading? <p><em>Loading...</em></p>: renderForecastsTable();
 
     return <div>
                 <h1 id="tabelLabel" >Authors</h1>
