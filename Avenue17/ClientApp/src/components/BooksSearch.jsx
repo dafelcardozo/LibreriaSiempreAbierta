@@ -23,7 +23,7 @@ function AuthorsList({ authors, onListUpdated }) {
 
     useEffect(() => {
         populateAuthors()
-    }]);
+    });
     const removeAuthor = (id) => setSelectedAuthors(selectedAuthors.filter(({ value }) => id !== value));
     const options = allAuthors.map(({ id, name, lastName }) => ({ value: id, label: `${name} ${lastName}`}) );
     return <>
