@@ -9,13 +9,13 @@ const fetchAuthors = async () => (await axios.get('api/authors')).data;
 const postAuthor = async (author) => (await axios.post('api/authors', author)).data;
 const deleteAuthor = async (authorId) => (await axios.delete(`api/authors/${authorId}`).data);
 
-function CreateAuthorForm({ onPostAuthor}) {
+function CreateAuthorForm({ onPostAuthor }) {
     const [name, setName] = useState("");
     const [lastName, setLastName] = useState("");
-    
+
     return (<form onSubmit={async (e) => {
         e.preventDefault();
-        const author = { name, lastName, books:[] };
+        const author = { name, lastName, books: [] };
         await postAuthor(author);
         onPostAuthor(author);
 
@@ -63,11 +63,11 @@ export function Authors(props) {
                             <td>
                                 {books?.map(({ title }) => title).join(", ")}
                             </td>
-                            <td><MDBBtn onClick={async () => {
-                                await deleteAuthor(id);
-                                setTimeout(populateAuthors, 100);
-
-                            }}><FontAwesomeIcon icon={faMinus} /></MDBBtn></td>
+                            <td>
+                                <MDBBtn onClick={async () => {
+                                    await deleteAuthor(id);
+                                    setTimeout(populateAuthors, 100);
+                                }}><FontAwesomeIcon icon={faMinus} /></MDBBtn></td>
                         </tr>
                     )}
                 </tbody>
@@ -89,5 +89,5 @@ export function Authors(props) {
                 </MDBModalContent>
             </MDBModalDialog>
         </MDBModal>
-            </>
+    </>
 }

@@ -4,31 +4,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 
 namespace Avenue17.Controllers
 {
     public class BookDto
     {
         public long Isbn { get; set; } 
-        public string Title { get; set; } = "";
-        public string Synopsis { get; set; } = "";
-        public string NPages { get; set; } = "";
-        public List<int> Authors { get; set; } = new List<int>();
-        public int Editorial { get; set; }
-    }
-
-    public class BookDto2
-    {
-        public long Isbn { get; set; }
         public string Title { get; set; } = "";
         public string Synopsis { get; set; } = "";
         public string NPages { get; set; } = "";

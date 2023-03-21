@@ -22,7 +22,7 @@ namespace Avenue17.Controllers
           {
               return NotFound();
           }
-            return await _context.Author.ToListAsync();
+            return await _context.Author.Include(a => a.Books).ToListAsync();
         }
 
         // GET: api/Authors/5
