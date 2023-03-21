@@ -7,6 +7,7 @@ import '@fortawesome/fontawesome-svg-core/styles.css'
 
 
 const postEditorial = async (editorial) => (await axios.post('api/editorials', editorial)).data;
+const deleteEditorial = async (editorial) => (await axios.delete(`api/editorials/${editorial}`)).data;
 
 function CreateEditorial({ onPostEditorial }) {
     const [name, setName] = useState("");
@@ -58,7 +59,11 @@ export default function Editorials(props) {
                     <tr key={id}>
                         <td>{id}</td>
                         <td>{name}</td>
-                        <td>{location}</td>                    
+                        <td>{location}</td>
+                        <td><MDBBtn onClick={async () => {
+                            await deleteEditorial(id);
+                            await populateEditorials();
+                        }}><FontAwesomeIcon icon={faMinus} /></MDBBtn> </td>
                     </tr>
                 )}
             </tbody>

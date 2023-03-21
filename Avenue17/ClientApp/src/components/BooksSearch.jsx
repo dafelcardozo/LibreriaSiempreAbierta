@@ -118,6 +118,7 @@ export default function BooksSearch() {
                                 <td>{npages}</td>
                                 <td>{authors.map(({ name, lastName }) => `${name} ${lastName}`).join(', ')}</td>
                                 <td>{editorial}</td>
+                            
                             </tr>
                         )}
                     </tbody>
