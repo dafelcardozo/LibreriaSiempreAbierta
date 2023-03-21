@@ -105,7 +105,7 @@ export default function BooksSearch() {
                             <th>Synopsis</th>
                             <th>Number of pages</th>
                             <th>Authors</th>
-                            <th>Editorials</th>
+                            <th>Editorial</th>
                             <th>
                                 <MDBBtn onClick={() => setCreateBookVisible(true)}>
                                     <FontAwesomeIcon icon={faPlus} />
@@ -114,14 +114,14 @@ export default function BooksSearch() {
                         </tr>
                     </thead>
                     <tbody>
-                        {books.map(({ isbn, title, synopsis, npages, authors, editorial }) =>
+                        {books.map(({ isbn, title, synopsis, nPages, Authors, Editorial }) =>
                             <tr key={isbn}>
                                 <td>{ isbn}</td>
                                 <td>{title}</td>
                                 <td>{synopsis}</td>
-                                <td>{npages}</td>
-                                <td>{authors.map(({ name, lastName }) => `${name} ${lastName}`).join(', ')}</td>
-                                <td>{editorial}</td>
+                                <td>{nPages}</td>
+                                <td>{Authors?.map(({ name, lastName }) => `${name} ${lastName}`).join(', ')}</td>
+                                <td>{Editorial.name} ({Editorial.location})</td>
                             
                             </tr>
                         )}

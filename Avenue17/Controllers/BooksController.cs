@@ -22,14 +22,19 @@ namespace Avenue17.Controllers
         public string Title { get; set; } = "";
         public string Synopsis { get; set; } = "";
         public string NPages { get; set; } = "";
-
         public List<int> Authors { get; set; } = new List<int>();
-
         public int Editorial { get; set; }
-
     }
 
-
+    public class BookDto2
+    {
+        public long Isbn { get; set; }
+        public string Title { get; set; } = "";
+        public string Synopsis { get; set; } = "";
+        public string NPages { get; set; } = "";
+        public List<int> Authors { get; set; } = new List<int>();
+        public int Editorial { get; set; }
+    }
     [Route("api/[controller]")]
     [ApiController]
     public class BooksController : ControllerBase
@@ -49,7 +54,7 @@ namespace Avenue17.Controllers
             {
                 return NotFound();
             }
-            return await _context.Books.ToListAsync();
+            return await _context.Books.Include(b => b.Editorial).Include(b => b.Authors).ToListAsync();
         }
 
         // GET: api/Books/5

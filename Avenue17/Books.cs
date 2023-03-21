@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace Avenue17
 {
@@ -11,17 +12,9 @@ namespace Avenue17
         public DbSet<Book> Books { get; set; }
         public DbSet<Author> Author { get; set; }   
         public DbSet<Editorial> Editorial { get; set; }
-
-
         public BooksContext(DbContextOptions options):base(options)
         {
         }
-        /*
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer("Server=LAPTOP-NI5DQ9A4\\SQLEXPRESS;Database=LibreriaCasual;Trusted_Connection=SSPI;Trust Server Certificate=true;Encrypt=False");
-        }
-      */
     }
 
 
@@ -36,7 +29,7 @@ namespace Avenue17
         [Column("apellidos")]
         [MaxLength(45)]
         public string LastName { get; set; }
-
+        [JsonIgnore]
         public List<Book> Books { get; set; }
     }
     [Table("editoriales")]
@@ -58,16 +51,15 @@ namespace Avenue17
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long Isbn { get; set; }
-
         [Column("titulo")]
         public string Title { get; set; } = "";
         [Column("sinopsis")]
         public string Synopsis { get; set; } = "";
         [Column("n_paginas")]
         public string NPages { get; set; } = "";
-
+        [JsonProperty("Authors")]
         public List<Author> Authors { get; set; }=new List<Author>();
-
-        public Editorial Editorial { get; set; }
+        [JsonProperty("Editorial")]
+        public required Editorial Editorial { get; set; }
     }
 }
