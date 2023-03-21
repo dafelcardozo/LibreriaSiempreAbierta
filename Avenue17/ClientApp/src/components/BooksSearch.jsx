@@ -15,16 +15,18 @@ const fetchAllAuthors = async () => (await axios.get("api/authors")).data;
 function AuthorsList({ authors, onListUpdated }) {
     const [selectedAuthors, setSelectedAuthors] = useState([]);
     const [allAuthors, setAllAuthors] = useState(authors || []);
-    
+    const [loading, setLoading] = useState(true);
+
     const populateAuthors = async () => {
         const data = await fetchAllAuthors();
         setAllAuthors(data);
         onListUpdated(selectedAuthors);
+        setLoading(false);
     }
 
     useEffect(() => {
         populateAuthors()
-    });
+    }, [loading]);
     const removeAuthor = (id) => setSelectedAuthors(selectedAuthors.filter(({ value }) => id !== value));
     const options = allAuthors.map(({ id, name, lastName }) => ({ value: id, label: `${name} ${lastName}`}) );
     return <>
@@ -41,13 +43,16 @@ function CreateBookForm({ author, onPostBook }) {
     const [editorial, setEditorial] = useState(0);
     const [editorials, setEditorials] = useState([]);
     const [Authors, setAuthors] = useState([]);
+    const [loading, setLoading] = useState(true);
+
     const populateEditorials = async () => {
         const data = await fetchEditorials();
         setEditorials(data);
+        setLoading(false);
     };
     useEffect(() => {
         populateEditorials();
-    });
+    }, [loading]);
 
     return <form onSubmit={async (e) => {
         e.preventDefault();

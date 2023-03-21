@@ -12,28 +12,18 @@ namespace Avenue17
         public DbSet<Author> Author { get; set; }   
         public DbSet<Editorial> Editorial { get; set; }
 
-        public string DbPath { get; }
 
-        public BooksContext()
+        public BooksContext(DbContextOptions options):base(options)
         {
         }
+        /*
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-           /*
-            IConfigurationRoot configuration = new ConfigurationBuilder()
-                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                .AddJsonFile("appsettings.json")
-                .Build();
-            string? v = configuration.GetConnectionString("cadenaLibreria");
-            Console.WriteLine("Cadena de conexión desde el 'onConfiguring': "+ v);
-            */
-            optionsBuilder.UseSqlServer("Server=LAPTOP-NI5DQ9A4\\SQLEXPRESS;Database=LibreriaCasual;Trusted_Connection=SSPI;Trust Server Certificate=true;Encrypt=False");
-            //optionsBuilder.UseSqlServer(v);
-            
-            //optionsBuilder.UseSqlServer("name=ConnectionStrings:cadenaLibreria");
+            Console.WriteLine("From within the context, connString: "+ConnectionString);
+            optionsBuilder.UseSqlServer(ConnectionString);
+            //optionsBuilder.UseSqlServer("Server=LAPTOP-NI5DQ9A4\\SQLEXPRESS;Database=LibreriaCasual;Trusted_Connection=SSPI;Trust Server Certificate=true;Encrypt=False");
         }
-       
-
+      */
     }
 
 
