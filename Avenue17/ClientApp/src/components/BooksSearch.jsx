@@ -7,7 +7,8 @@ import '@fortawesome/fontawesome-svg-core/styles.css'
 import { MultiSelect } from "react-multi-select-component";
 import Select from 'react-select'
 
-const postBook = async (book) => (await axios.post('api/books', {...book})).data;
+const postBook = async (book) => (await axios.post('api/books', { ...book })).data;
+const deleteBook = async (id) => (await axios.delete(`api/books/${id}`)).data;
 const fetchEditorials = async () => (await axios.get("api/editorials")).data;
 const fetchAllAuthors = async () => (await axios.get("api/authors")).data;
 
@@ -122,7 +123,10 @@ export default function BooksSearch() {
                                 <td>{nPages}</td>
                                 <td>{Authors?.map(({ name, lastName }) => `${name} ${lastName}`).join(', ')}</td>
                                 <td>{Editorial.name} ({Editorial.location})</td>
-                            
+                                <td><MDBBtn onClick={async () => {
+                                    await deleteBook(isbn);
+                                    setTimeout(populateBooks, 100);
+                                }}><FontAwesomeIcon icon={faMinus} /></MDBBtn></td>
                             </tr>
                         )}
                     </tbody>
@@ -133,7 +137,8 @@ export default function BooksSearch() {
             <MDBModalDialog>
                 <MDBModalContent>
                     <MDBModalHeader>
-                        <MDBModalTitle>Please enter the book's data below</MDBModalTitle><MDBBtn className="btn-close" color="none" aria-label="Close" onClick={() => setCreateBookVisible(false)} />
+                        <MDBModalTitle>Please enter the book's data below</MDBModalTitle>
+                        <MDBBtn className="btn-close" color="none" aria-label="Close" onClick={() => setCreateBookVisible(false)} />
                     </MDBModalHeader>
                     <MDBModalBody>
                         <CreateBookForm onPostBook={async () => {
@@ -141,9 +146,6 @@ export default function BooksSearch() {
                             setCreateBookVisible(false);
                         }} />
                     </MDBModalBody>
-                    <MDBModalFooter>
-                        <MDBBtn>Save changes</MDBBtn>
-                    </MDBModalFooter>
                 </MDBModalContent>
             </MDBModalDialog>
         </MDBModal>
