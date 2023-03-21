@@ -17,6 +17,29 @@ namespace Avenue17.Controllers
         public List<int> Authors { get; set; } = new List<int>();
         public int Editorial { get; set; }
     }
+    [Route("api/search")]
+    [ApiController]
+    public class SearchController:ControllerBase
+    {
+        private readonly BooksContext _context;
+        public SearchController(BooksContext context)
+        {
+            _context = context;
+        }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Book>>> SearchBooks(string search)
+        {
+            if (_context.Books == null)
+            {
+                return NotFound();
+            }
+            var r = from b in _context.Books
+                    where b.Title.Contains(search) || b.Authors.Any(a => a.Name.Contains(search) || a.LastName.Contains(search)) || b.Editorial.Name.Contains(search) || b.Editorial.Location.Contains(search)
+                    select b;
+            return await r.Include(b => b.Editorial).Include(b => b.Authors).ToListAsync();
+        }
+    }
+
     [Route("api/[controller]")]
     [ApiController]
     public class BooksController : ControllerBase
@@ -38,6 +61,7 @@ namespace Avenue17.Controllers
             }
             return await _context.Books.Include(b => b.Editorial).Include(b => b.Authors).ToListAsync();
         }
+ 
 
         // GET: api/Books/5
         [HttpGet("{id}")]

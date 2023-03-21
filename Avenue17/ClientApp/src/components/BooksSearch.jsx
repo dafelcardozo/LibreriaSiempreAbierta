@@ -27,17 +27,16 @@ function AuthorsList({ authors, onListUpdated }) {
         populateAuthors()
     }, [loading]);
     const options = allAuthors.map(({ id, name, lastName }) => ({ value: id, label: `${name} ${lastName}`}) );
-    return <>
-        <MultiSelect options={options} value={selectedAuthors} onChange={(authors) => {
+    return <MultiSelect options={options} value={selectedAuthors} onChange={(authors) => {
             console.info("onChange authors");
             console.info({authors});
             setSelectedAuthors(authors)
             onListUpdated(authors);
         }} labelledBy="Select" />
-    </>
+  
 }
 
-function CreateBookForm({ author, onPostBook }) {
+function CreateBookForm({ onPostBook }) {
     const [isbn, setIsbn] = useState("0");
     const [Title, setTitle] = useState("");
     const [Synopsis, setSynopsis] = useState("");
@@ -84,11 +83,17 @@ export default function BooksSearch() {
 
     useEffect(() => {
         populateBooks();
-    }, [loading]);
+    }, [search]);
 
     const populateBooks = async () => {
-        const response = await fetch('api/books');
-        const books = await response.json();
+        let books;
+        if (search.trim()) {
+            const response = await fetch(`api/search?search=${search.trim()}`);
+            books = await response.json();
+        } else {
+            const response = await fetch('api/books');
+            books = await response.json();
+        }
         setBooks(books);
         setLoading(false);
     }
@@ -96,8 +101,10 @@ export default function BooksSearch() {
     return <>
         <h1 id="tabelLabel" >Search by book title, authors, editorial</h1>
         {loading ? <p><em>Loading...</em></p> : (
-            <>
-                <MDBInput type="text" value={search} label="Search by book title, author's name, etc" onChange={({ target }) => setSearch(target.value)} className='btn-block'/>
+            <div>
+                <MDBRow>
+                    <MDBInput  type="text" value={search} label="Search by book title, author's name, ISBN" onChange={({ target }) => setSearch(target.value)} />
+                </MDBRow>
                 <table className='table table-striped' aria-labelledby="tabelLabel">
                     <thead>
                         <tr>
@@ -131,7 +138,7 @@ export default function BooksSearch() {
                         )}
                     </tbody>
                 </table>
-            </>)}
+            </div>)}
 
         <MDBModal show={createBookVisible} setShow={setCreateBookVisible} >
             <MDBModalDialog>
