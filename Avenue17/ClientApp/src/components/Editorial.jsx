@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
 import '@fortawesome/fontawesome-svg-core/styles.css'
 
-
+const fetchEditorials = async () => (await axios.get('api/editorials')).data;
 const postEditorial = async (editorial) => (await axios.post('api/editorials', editorial)).data;
 const deleteEditorial = async (editorial) => (await axios.delete(`api/editorials/${editorial}`)).data;
 
@@ -35,8 +35,7 @@ export default function Editorials(props) {
     }, [loading]);
 
     const populateEditorials = async () => {
-        const response = await fetch('api/editorials');
-        const editorials = await response.json();
+        const editorials = await fetchEditorials();
         setEditorials(editorials);
         setLoading(false);
         setCreateEditorialVisible(false);
