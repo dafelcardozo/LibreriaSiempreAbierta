@@ -19,9 +19,7 @@ namespace Avenue17
         /*
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            Console.WriteLine("From within the context, connString: "+ConnectionString);
-            optionsBuilder.UseSqlServer(ConnectionString);
-            //optionsBuilder.UseSqlServer("Server=LAPTOP-NI5DQ9A4\\SQLEXPRESS;Database=LibreriaCasual;Trusted_Connection=SSPI;Trust Server Certificate=true;Encrypt=False");
+            optionsBuilder.UseSqlServer("Server=LAPTOP-NI5DQ9A4\\SQLEXPRESS;Database=LibreriaCasual;Trusted_Connection=SSPI;Trust Server Certificate=true;Encrypt=False");
         }
       */
     }
