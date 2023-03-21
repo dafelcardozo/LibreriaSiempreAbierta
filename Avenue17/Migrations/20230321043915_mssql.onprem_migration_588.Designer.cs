@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Avenue17.Migrations
 {
     [DbContext(typeof(BooksContext))]
-    [Migration("20230320011607_mssql.onprem_migration_110")]
-    partial class mssqlonprem_migration_110
+    [Migration("20230321043915_mssql.onprem_migration_588")]
+    partial class mssqlonprem_migration_588
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -67,11 +67,7 @@ namespace Avenue17.Migrations
             modelBuilder.Entity("Avenue17.Book", b =>
                 {
                     b.Property<long>("Isbn")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(13)
                         .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Isbn"));
 
                     b.Property<int>("EditorialId")
                         .HasColumnType("int");

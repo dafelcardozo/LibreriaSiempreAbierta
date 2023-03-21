@@ -7,7 +7,7 @@ import '@fortawesome/fontawesome-svg-core/styles.css'
 import { MultiSelect } from "react-multi-select-component";
 import Select from 'react-select'
 
-const postBook = async (book) => (await axios.post('api/books', {...book, book})).data;
+const postBook = async (book) => (await axios.post('api/books', {...book})).data;
 const fetchEditorials = async () => (await axios.get("api/editorials")).data;
 const fetchAllAuthors = async () => (await axios.get("api/authors")).data;
 
@@ -19,18 +19,20 @@ function AuthorsList({ authors, onListUpdated }) {
     const populateAuthors = async () => {
         const data = await fetchAllAuthors();
         setAllAuthors(data);
-        onListUpdated(selectedAuthors);
         setLoading(false);
     }
 
     useEffect(() => {
         populateAuthors()
     }, [loading]);
-    const removeAuthor = (id) => setSelectedAuthors(selectedAuthors.filter(({ value }) => id !== value));
     const options = allAuthors.map(({ id, name, lastName }) => ({ value: id, label: `${name} ${lastName}`}) );
     return <>
-        <ul>{selectedAuthors.map(({ label, value }) => (<li key={value}>{label} <MDBBtn type='button' color='secondary' onClick={() => removeAuthor(value)}><FontAwesomeIcon icon={faMinus} /></MDBBtn></li>))}</ul>
-        <MultiSelect options={options} value={selectedAuthors} onChange={setSelectedAuthors} labelledBy="Select" />
+        <MultiSelect options={options} value={selectedAuthors} onChange={(authors) => {
+            console.info("onChange authors");
+            console.info({authors});
+            setSelectedAuthors(authors)
+            onListUpdated(authors);
+        }} labelledBy="Select" />
     </>
 }
 
@@ -56,7 +58,7 @@ function CreateBookForm({ author, onPostBook }) {
     return <form onSubmit={async (e) => {
         e.preventDefault();
         const book = {
-            isbn: isbn, Title, Synopsis, Authors, NPages, editorial: { id: editorial }
+            isbn: isbn, Title, Synopsis, Authors: Authors.map(({value }) => value), NPages, Editorial:  editorial,  
         };
         await postBook(book);
         onPostBook(book);
@@ -65,7 +67,7 @@ function CreateBookForm({ author, onPostBook }) {
         <MDBInput type="text" name='title' label="Please enter the book's title" required value={Title} onChange={({ target }) => setTitle(target.value)} />
         <MDBTextArea type="text" name='synopsis' rows={4} required label="Please enter a synopsis" value={Synopsis} onChange={({ target }) => setSynopsis(target.value)} />
         <MDBInput type="text" name='npages' label="Enter a number of pages" required value={NPages} onChange={({ target }) => setNPages(target.value)} />
-        <Select options={editorials.map(({ id, name, location }) => ({ value: id, label: name }))} onChange={({ value, label}) => setEditorial(value)} />
+        <Select options={editorials.map(({ id, name, location }) => ({ value: id, label: `${name} at ${location}`}))} onChange={({ value, label}) => setEditorial(value)} />
         <AuthorsList authors={Authors} onListUpdated={(authors) => setAuthors(authors)}></AuthorsList>
         <MDBRow>
             <MDBCol><MDBBtn type="submit" className='btn-block'>Agregar</MDBBtn></MDBCol>
@@ -101,6 +103,7 @@ export default function BooksSearch() {
                             <th>Id</th>
                             <th>Title</th>
                             <th>Synopsis</th>
+                            <th>Number of pages</th>
                             <th>Authors</th>
                             <th>Editorials</th>
                             <th>
@@ -113,6 +116,7 @@ export default function BooksSearch() {
                     <tbody>
                         {books.map(({ isbn, title, synopsis, npages, authors, editorial }) =>
                             <tr key={isbn}>
+                                <td>{ isbn}</td>
                                 <td>{title}</td>
                                 <td>{synopsis}</td>
                                 <td>{npages}</td>
@@ -132,7 +136,10 @@ export default function BooksSearch() {
                         <MDBModalTitle>Please enter the book's data below</MDBModalTitle><MDBBtn className="btn-close" color="none" aria-label="Close" onClick={() => setCreateBookVisible(false)} />
                     </MDBModalHeader>
                     <MDBModalBody>
-                        <CreateBookForm onPostBook={populateBooks} />
+                        <CreateBookForm onPostBook={async () => {
+                            await populateBooks();
+                            setCreateBookVisible(false);
+                        }} />
                     </MDBModalBody>
                     <MDBModalFooter>
                         <MDBBtn>Save changes</MDBBtn>

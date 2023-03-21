@@ -5,7 +5,7 @@
 namespace Avenue17.Migrations
 {
     /// <inheritdoc />
-    public partial class mssqlonprem_migration_110 : Migration
+    public partial class mssqlonprem_migration_588 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -42,8 +42,7 @@ namespace Avenue17.Migrations
                 name: "libros",
                 columns: table => new
                 {
-                    Isbn = table.Column<long>(type: "bigint", maxLength: 13, nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Isbn = table.Column<long>(type: "bigint", nullable: false),
                     titulo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     sinopsis = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     n_paginas = table.Column<string>(type: "nvarchar(max)", nullable: false),

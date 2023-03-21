@@ -56,6 +56,7 @@ namespace Avenue17
     public class Book
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long Isbn { get; set; }
 
         [Column("titulo")]

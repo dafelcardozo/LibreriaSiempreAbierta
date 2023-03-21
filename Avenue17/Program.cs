@@ -7,6 +7,9 @@ builder.Services.AddDbContext<BooksContext>(options => options.UseSqlServer(conn
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<BooksContext>();
+builder.Services.AddControllers().AddNewtonsoftJson(options =>
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+);
 
 var app = builder.Build();
 

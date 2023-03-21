@@ -1,8 +1,35 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Avenue17.Controllers
 {
+    public class BookDto
+    {
+        public long Isbn { get; set; } 
+        public string Title { get; set; } = "";
+        public string Synopsis { get; set; } = "";
+        public string NPages { get; set; } = "";
+
+        public List<int> Authors { get; set; } = new List<int>();
+
+        public int Editorial { get; set; }
+
+    }
+
+
     [Route("api/[controller]")]
     [ApiController]
     public class BooksController : ControllerBase
@@ -18,21 +45,21 @@ namespace Avenue17.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
         {
-          if (_context.Books == null)
-          {
-              return NotFound();
-          }
+            if (_context.Books == null)
+            {
+                return NotFound();
+            }
             return await _context.Books.ToListAsync();
         }
 
         // GET: api/Books/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetBook(int id)
+        public async Task<ActionResult<Book>> GetBook(long id)
         {
-          if (_context.Books == null)
-          {
-              return NotFound();
-          }
+            if (_context.Books == null)
+            {
+                return NotFound();
+            }
             var book = await _context.Books.FindAsync(id);
 
             if (book == null)
@@ -46,7 +73,7 @@ namespace Avenue17.Controllers
         // PUT: api/Books/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBook(int id, Book book)
+        public async Task<IActionResult> PutBook(long id, Book book)
         {
             if (id != book.Isbn)
             {
@@ -77,21 +104,33 @@ namespace Avenue17.Controllers
         // POST: api/Books
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Book>> PostBook(Book book)
+        public async Task<ActionResult<Book>> PostBook(BookDto bookDto)
         {
-          if (_context.Books == null)
-          {
-              return Problem("Entity set 'BloggingContext.Books'  is null.");
-          }
+
+            if (_context.Books == null)
+            {
+                return Problem("Entity set 'BloggingContext.Books'  is null.");
+            }
+
+            var book = new Book()
+            {
+                Isbn = bookDto.Isbn,
+                NPages = bookDto.NPages,
+                Synopsis = bookDto.Synopsis,
+                Title = bookDto.Title,
+                Editorial = (from e in _context.Editorial where e.Id == bookDto.Editorial select e).First(),
+                Authors = (from a in _context.Author where bookDto.Authors.Contains(a.Id) select a).ToList(),
+            };
+
             _context.Books.Add(book);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetBook", new { id = book.Isbn }, book);
+            return CreatedAtAction("GetBook", new { id = bookDto.Isbn }, book);
         }
 
         // DELETE: api/Books/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBook(int id)
+        public async Task<IActionResult> DeleteBook(long id)
         {
             if (_context.Books == null)
             {
@@ -109,7 +148,7 @@ namespace Avenue17.Controllers
             return NoContent();
         }
 
-        private bool BookExists(int id)
+        private bool BookExists(long id)
         {
             return (_context.Books?.Any(e => e.Isbn == id)).GetValueOrDefault();
         }

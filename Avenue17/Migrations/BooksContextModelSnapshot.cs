@@ -64,11 +64,7 @@ namespace Avenue17.Migrations
             modelBuilder.Entity("Avenue17.Book", b =>
                 {
                     b.Property<long>("Isbn")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(13)
                         .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Isbn"));
 
                     b.Property<int>("EditorialId")
                         .HasColumnType("int");
