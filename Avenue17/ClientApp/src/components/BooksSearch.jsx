@@ -7,7 +7,6 @@ import '@fortawesome/fontawesome-svg-core/styles.css'
 import { MultiSelect } from "react-multi-select-component";
 import Select from 'react-select'
 
-// UTF-8
 const postBook = async (book) => (await axios.post('api/books', {...book, book})).data;
 const fetchEditorials = async () => (await axios.get("api/editorials")).data;
 const fetchAllAuthors = async () => (await axios.get("api/authors")).data;

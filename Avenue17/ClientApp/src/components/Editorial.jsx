@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { MDBRow, MDBCol, MDBBtn, MDBInput, MDBTextArea, MDBModalFooter, MDBModal, MDBModalDialog, MDBModalContent, MDBModalTitle, MDBModalHeader, MDBModalBody } from 'mdb-react-ui-kit';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
+import '@fortawesome/fontawesome-svg-core/styles.css'
 
-// UTF-8
+
 const postEditorial = async (editorial) => (await axios.post('api/editorials', editorial)).data;
 
 function CreateEditorial({ onPostEditorial }) {
@@ -14,10 +18,9 @@ function CreateEditorial({ onPostEditorial }) {
         await postEditorial(editorial);
         onPostEditorial(editorial);
     }}>
-        <input type="text" value={name} onChange={({ target }) => setName(target.value)} />
-        <input type="text" value={location} onChange={({ target }) => setLocation(target.value)} />
-        <button type="submit" >Crear</button>
-        <button type="button">Cancelar</button>
+        <MDBInput type="text" name='name' label="Please enter the editorial's name" value={name} onChange={({ target }) => setName(target.value)} />
+        <MDBInput type="text" value={location} label="Please enter the editorial's location" onChange={({ target }) => setLocation(target.value)} />
+        <MDBBtn type="submit" className='btn-block'>Crear</MDBBtn>
     </form>)
 }
 
@@ -35,36 +38,43 @@ export default function Editorials(props) {
         const editorials = await response.json();
         setEditorials(editorials);
         setLoading(false);
+        setCreateEditorialVisible(false);
     }
 	
-    return <div>
+    return <>
         <h1 id="tabelLabel" >Editorials</h1>
         {loading ? <p><em>Loading...</em></p> : (
-            <table className='table table-striped' aria-labelledby="tabelLabel">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Name</th>
-                        <th>Last Name</th>
-                        <th>Books</th>
+        <table className='table table-striped' aria-labelledby="tabelLabel">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Location</th>
+                    <th><MDBBtn onClick={() => setCreateEditorialVisible(true)}><FontAwesomeIcon icon={faPlus} /></MDBBtn></th>
+                </tr>
+            </thead>
+            <tbody>
+                {editorials.map(({ id, name, location}) =>
+                    <tr key={id}>
+                        <td>{id}</td>
+                        <td>{name}</td>
+                        <td>{location}</td>                    
                     </tr>
-                </thead>
-                <tbody>
-                    {editorials.map(({ id, name, location}) =>
-                        <tr key={id}>
-                            <td>{id}</td>
-                            <td>{name}</td>
-                            <td>{location}</td>
-                            
-                        </tr>
-                    )}
-                </tbody>
-            </table>)}
-        <div>
-            <button onClick={() => setCreateEditorialVisible(true)}>Add</button>
-            {createEditorialVisible && <CreateEditorial onPostEditorial={() => {
-                populateEditorials();
-            }} />}
-        </div>
-    </div>
+                )}
+            </tbody>
+        </table>)}
+            
+        <MDBModal show={createEditorialVisible} setShow={setCreateEditorialVisible} >
+            <MDBModalDialog>
+                <MDBModalContent>
+                    <MDBModalHeader>
+                        <MDBModalTitle>Please enter the book's data below</MDBModalTitle><MDBBtn className="btn-close" color="none" aria-label="Close" onClick={() => setCreateEditorialVisible(false)} />
+                    </MDBModalHeader>
+                    <MDBModalBody>
+                        <CreateEditorial onPostEditorial={populateEditorials} />
+                    </MDBModalBody>
+                </MDBModalContent>
+            </MDBModalDialog>
+        </MDBModal>
+    </>
 }
