@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { MDBRow, MDBCol, MDBBtn, MDBInput, MDBTextArea, MDBModalFooter, MDBModal, MDBModalDialog, MDBModalContent, MDBModalTitle, MDBModalHeader, MDBModalBody } from 'mdb-react-ui-kit';
+import { MDBBtn, MDBInput, MDBModal, MDBModalDialog, MDBModalContent, MDBModalTitle, MDBModalHeader, MDBModalBody } from 'mdb-react-ui-kit';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
 import '@fortawesome/fontawesome-svg-core/styles.css'
@@ -9,7 +9,7 @@ const fetchEditorials = async () => (await axios.get('api/editorials')).data;
 const postEditorial = async (editorial) => (await axios.post('api/editorials', editorial)).data;
 const deleteEditorial = async (editorial) => (await axios.delete(`api/editorials/${editorial}`)).data;
 
-function CreateEditorial({ onPostEditorial }) {
+function CreateEditorialForm({ onPostEditorial }) {
     const [name, setName] = useState("");
     const [location, setLocation] = useState("");
 
@@ -72,10 +72,10 @@ export default function Editorials(props) {
             <MDBModalDialog>
                 <MDBModalContent>
                     <MDBModalHeader>
-                        <MDBModalTitle>Please enter the book's data below</MDBModalTitle><MDBBtn className="btn-close" color="none" aria-label="Close" onClick={() => setCreateEditorialVisible(false)} />
+                        <MDBModalTitle>Please enter the editorial's data below</MDBModalTitle><MDBBtn className="btn-close" color="none" aria-label="Close" onClick={() => setCreateEditorialVisible(false)} />
                     </MDBModalHeader>
                     <MDBModalBody>
-                        <CreateEditorial onPostEditorial={populateEditorials} />
+                        <CreateEditorialForm onPostEditorial={populateEditorials} />
                     </MDBModalBody>
                 </MDBModalContent>
             </MDBModalDialog>
