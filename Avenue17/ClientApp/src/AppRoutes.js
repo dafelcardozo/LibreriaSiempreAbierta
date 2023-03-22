@@ -1,4 +1,3 @@
-import { Counter } from "./components/Counter";
 import { Authors } from "./components/Authors";
 import Editorials from "./components/Editorial";
 import BooksSearch from './components/BooksSearch'
@@ -8,10 +7,6 @@ const AppRoutes = [
     {
         index: true,
         element: <Home />
-    },
-    {
-        path: '/counter',
-        element: <Counter />
     },
     {
         path: '/authors',

@@ -19,9 +19,11 @@ export function Home() {
                 <h4>Architecture</h4>
                 <p><span style={{ fontWeight: '500' }}>Avenue17</span> is an ASP .Net Core application, and uses a REST architecture through Entity Framework 7 models and Web API controlers, and a view layer in Node and React. It targets .Net Framework 7.</p>
 
-                <p>The SQL Server database is also deployed in Azure.</p>
+                <p>The SQL Server database is also deployed in Azure SQL.</p>
 
-                <p>The view layer uses several third-party Javascript libraries (many thanks to):</p>
+                <p>Deployments from the 'master' branch use Github's Workflows CI/CD capabilities.</p>
+
+                <p>The view layer uses several third-party Javascript libraries (many thanks to all their authors):</p>
                 <ul>
                     <li>React-Select and React-MultiSelect for two very specific but extremely important components</li>
                     <li>MDBootstrap React provides the general Look & Feel and it's React based components.</li>

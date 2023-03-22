@@ -26,13 +26,22 @@ namespace Avenue17.Controllers
 
         // GET: api/Authors
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAuthor()
+        public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAuthor(string? search = "")
         {
-          if (_context.Author == null)
-          {
-              return NotFound();
-          }
-            var result = from a in _context.Author select new AuthorDto() { Id = a.Id, Name = a.Name, LastName = a.LastName, Books = (from b in a.Books select new BookDto() { Title=b.Title, Isbn=b.Isbn}).ToList()};
+            if (_context.Author == null)
+            {
+                return NotFound();
+            }
+            var result = from a
+                         in _context.Author
+                         where a.Name.Contains(search) || a.LastName.Contains(search)
+                         select new AuthorDto()
+                         {
+                             Id = a.Id,
+                             Name = a.Name,
+                             LastName = a.LastName,
+                             Books = (from b in a.Books select new BookDto() { Title = b.Title, Isbn = b.Isbn }).ToList()
+                         };
             return await result.ToListAsync();
         }
 
@@ -40,12 +49,12 @@ namespace Avenue17.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Author>> GetAuthor(int id)
         {
-          if (_context.Author == null)
-          {
-              return NotFound();
-          }
+            if (_context.Author == null)
+            {
+                return NotFound();
+            }
             var author = await _context.Author.FindAsync(id);
-            
+
             if (author == null)
             {
                 return NotFound();
@@ -90,10 +99,10 @@ namespace Avenue17.Controllers
         [HttpPost]
         public async Task<ActionResult<Author>> PostAuthor(Author author)
         {
-          if (_context.Author == null)
-          {
-              return Problem("Entity set 'BooksContext.Author'  is null.");
-          }
+            if (_context.Author == null)
+            {
+                return Problem("Entity set 'BooksContext.Author'  is null.");
+            }
             _context.Author.Add(author);
             await _context.SaveChangesAsync();
 

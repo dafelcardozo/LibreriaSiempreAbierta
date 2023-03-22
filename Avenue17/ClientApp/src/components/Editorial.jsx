@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { MDBCard, MDBCardBody, MDBCardText, MDBCardHeader, MDBCardTitle, MDBBtn, MDBInput, MDBModal, MDBModalDialog, MDBModalContent, MDBModalTitle, MDBModalHeader, MDBModalBody } from 'mdb-react-ui-kit';
+import { MDBRow, MDBCard, MDBCardBody, MDBCardHeader, MDBCardTitle, MDBBtn, MDBInput, MDBModal, MDBModalDialog, MDBModalContent, MDBModalTitle, MDBModalHeader, MDBModalBody } from 'mdb-react-ui-kit';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
 import '@fortawesome/fontawesome-svg-core/styles.css'
 
-const fetchEditorials = async () => (await axios.get('api/editorials')).data;
+const fetchEditorials = async (search) => (await axios.get(`api/editorials?search=${search}`)).data;
 const postEditorial = async (editorial) => (await axios.post('api/editorials', editorial)).data;
 const deleteEditorial = async (editorial) => (await axios.delete(`api/editorials/${editorial}`)).data;
 
@@ -29,13 +29,14 @@ export default function Editorials(props) {
     const [editorials, setEditorials] = useState([]);
     const [loading, setLoading] = useState(true);
     const [createEditorialVisible, setCreateEditorialVisible] = useState(false);
+    const [search, setSearch] = useState("");
 
     useEffect(() => {
         populateEditorials();
-    }, [loading]);
+    }, [search]);
 
     const populateEditorials = async () => {
-        const editorials = await fetchEditorials();
+        const editorials = await fetchEditorials(search);
         setEditorials(editorials);
         setLoading(false);
         setCreateEditorialVisible(false);
@@ -45,6 +46,9 @@ export default function Editorials(props) {
         <MDBCard>
             <MDBCardHeader><MDBCardTitle>Editorials</MDBCardTitle></MDBCardHeader>
             <MDBCardBody>
+                <MDBRow>
+                    <MDBInput type="text" value={search} label="Search by editorial name or location" onChange={({ target }) => setSearch(target.value)} />
+                </MDBRow>
                 <table className='table table-striped' aria-labelledby="tabelLabel">
                     <thead>
                         <tr>

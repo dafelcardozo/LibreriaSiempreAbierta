@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { MDBCard, MDBCardBody, MDBCardText, MDBCardHeader, MDBCardTitle,  MDBRow, MDBCol, MDBBtn, MDBInput, MDBTextArea, MDBModalFooter, MDBModal, MDBModalDialog, MDBModalContent, MDBModalTitle, MDBModalHeader, MDBModalBody } from 'mdb-react-ui-kit';
+import { MDBCard, MDBCardBody, MDBCardText, MDBCardHeader, MDBCardTitle, MDBRow, MDBCol, MDBBtn, MDBInput, MDBTextArea, MDBModalFooter, MDBModal, MDBModalDialog, MDBModalContent, MDBModalTitle, MDBModalHeader, MDBModalBody } from 'mdb-react-ui-kit';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
 import '@fortawesome/fontawesome-svg-core/styles.css'
@@ -30,9 +30,9 @@ function AuthorsList({ authors, onListUpdated }) {
     return <MultiSelect options={options} value={selectedAuthors} name="author"
         valueRenderer={(selected, _options) => (selected.length ? selected.map(({ label }) => label) : "Please select the book's authors")}
         onChange={(authors) => {
-        setSelectedAuthors(authors)
-        onListUpdated(authors);
-    }}   />
+            setSelectedAuthors(authors)
+            onListUpdated(authors);
+        }} />
 
 }
 
@@ -49,7 +49,7 @@ function RegisterBookForm({ onPostBook }) {
     const populateEditorials = async () => {
         const data = await fetchEditorials();
         setEditorials(data);
-        setLoading(false); 
+        setLoading(false);
     };
     useEffect(() => {
         populateEditorials();
@@ -63,10 +63,10 @@ function RegisterBookForm({ onPostBook }) {
         await postBook(book);
         onPostBook(book);
     }}>
-        <MDBInput type="number" wrapperClass='mb-4'  name='ISBN' label="Please enter the book's ISBN" required value={isbn} onChange={({ target }) => setIsbn(target.value)} />
+        <MDBInput type="number" wrapperClass='mb-4' name='ISBN' label="Please enter the book's ISBN" required value={isbn} onChange={({ target }) => setIsbn(target.value)} />
         <MDBInput type="text" wrapperClass='mb-4' name='title' label="Please enter the book's title" required value={Title} onChange={({ target }) => setTitle(target.value)} />
-        <MDBTextArea type="text" wrapperClass='mb-4'  name='synopsis' rows={4} required label="Please enter a synopsis" value={Synopsis} onChange={({ target }) => setSynopsis(target.value)} />
-        <MDBInput type="text" wrapperClass='mb-4'  name='npages' label="Please enter a number of pages" required value={NPages} onChange={({ target }) => setNPages(target.value)} />
+        <MDBTextArea type="text" wrapperClass='mb-4' name='synopsis' rows={4} required label="Please enter a synopsis" value={Synopsis} onChange={({ target }) => setSynopsis(target.value)} />
+        <MDBInput type="text" wrapperClass='mb-4' name='npages' label="Please enter a number of pages" required value={NPages} onChange={({ target }) => setNPages(target.value)} />
         <Select wrapperClass='mb-4' options={editorials.map(({ id, name, location }) => ({ value: id, label: `${name} at ${location}` }))}
             onChange={({ value, label }) => setEditorial(value)} placeholder="Select an editorial..." />
         <br />
@@ -105,42 +105,42 @@ export default function BooksSearch() {
             <MDBCard>
                 <MDBCardHeader><MDBCardTitle>Search a book by it's title, author or editorial name, ISBN, synopsis text</MDBCardTitle></MDBCardHeader>
                 <MDBCardBody>
-                        <MDBRow>
-                            <MDBInput type="text" value={search} label="Please enter your search string..." onChange={({ target }) => setSearch(target.value)} />
-                        </MDBRow>
-                        <table className='table table-striped' aria-labelledby="tabelLabel">
-                            <thead>
-                                <tr>
-                                    <th>Id</th>
-                                    <th>Title</th>
-                                    <th>Synopsis</th>
-                                    <th>Number of pages</th>
-                                    <th>Authors</th>
-                                    <th>Editorial</th>
-                                    <th>
-                                        <MDBBtn onClick={() => setCreateBookVisible(true)}>
-                                            <FontAwesomeIcon icon={faPlus} />
-                                        </MDBBtn>
-                                    </th>
+                    <MDBRow>
+                        <MDBInput type="text" value={search} label="Please enter your search string..." onChange={({ target }) => setSearch(target.value)} />
+                    </MDBRow>
+                    <table className='table table-striped' aria-labelledby="tabelLabel">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Title</th>
+                                <th>Synopsis</th>
+                                <th>Number of pages</th>
+                                <th>Authors</th>
+                                <th>Editorial</th>
+                                <th>
+                                    <MDBBtn onClick={() => setCreateBookVisible(true)}>
+                                        <FontAwesomeIcon icon={faPlus} />
+                                    </MDBBtn>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {books.map(({ isbn, title, synopsis, nPages, Authors, Editorial }) =>
+                                <tr key={isbn}>
+                                    <td>{isbn}</td>
+                                    <td>{title}</td>
+                                    <td>{synopsis}</td>
+                                    <td>{nPages}</td>
+                                    <td>{Authors?.map(({ name, lastName }) => `${name} ${lastName}`).join(', ')}</td>
+                                    <td>{Editorial.name} ({Editorial.location})</td>
+                                    <td><MDBBtn onClick={async () => {
+                                        await deleteBook(isbn);
+                                        setTimeout(populateBooks, 100);
+                                    }}><FontAwesomeIcon icon={faMinus} /></MDBBtn></td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {books.map(({ isbn, title, synopsis, nPages, Authors, Editorial }) =>
-                                    <tr key={isbn}>
-                                        <td>{isbn}</td>
-                                        <td>{title}</td>
-                                        <td>{synopsis}</td>
-                                        <td>{nPages}</td>
-                                        <td>{Authors?.map(({ name, lastName }) => `${name} ${lastName}`).join(', ')}</td>
-                                        <td>{Editorial.name} ({Editorial.location})</td>
-                                        <td><MDBBtn onClick={async () => {
-                                            await deleteBook(isbn);
-                                            setTimeout(populateBooks, 100);
-                                        }}><FontAwesomeIcon icon={faMinus} /></MDBBtn></td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
+                            )}
+                        </tbody>
+                    </table>
                 </MDBCardBody>
             </MDBCard>
             <MDBModal show={createBookVisible} setShow={setCreateBookVisible} staticBackdrop  >

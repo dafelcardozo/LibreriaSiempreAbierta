@@ -3,9 +3,9 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
 import '@fortawesome/fontawesome-svg-core/styles.css'
-import { MDBCard, MDBCardBody, MDBCardText, MDBCardHeader, MDBCardTitle, MDBBtn, MDBInput, MDBModal, MDBModalDialog, MDBModalContent, MDBModalTitle, MDBModalHeader, MDBModalBody } from 'mdb-react-ui-kit';
+import { MDBRow, MDBCard, MDBCardBody, MDBCardHeader, MDBCardTitle, MDBBtn, MDBInput, MDBModal, MDBModalDialog, MDBModalContent, MDBModalTitle, MDBModalHeader, MDBModalBody } from 'mdb-react-ui-kit';
 
-const fetchAuthors = async () => (await axios.get('api/authors')).data;
+const searchAuthors = async (search) => (await axios.get(`api/authors?search=${search}`)).data;
 const postAuthor = async (author) => (await axios.post('api/authors', author)).data;
 const deleteAuthor = async (authorId) => (await axios.delete(`api/authors/${authorId}`).data);
 
@@ -30,21 +30,24 @@ export function Authors() {
     const [authors, setAuthors] = useState([]);
     const [loading, setLoading] = useState(true);
     const [createAuthorVisible, setCreateAuthorVisible] = useState(false);
+    const [search, setSearch] = useState("");
 
     useEffect(() => {
         populateAuthors();
-    }, [loading]);
+    }, [search]);
 
     const populateAuthors = async () => {
-        const data = await fetchAuthors();
+        const data = await searchAuthors(search);
         setAuthors(data);
         setLoading(false);
     }
-
     return loading ? <p><em>Loading...</em></p> : <>
         <MDBCard>
             <MDBCardHeader><MDBCardTitle>Search and register authors</MDBCardTitle></MDBCardHeader>
             <MDBCardBody>
+                <MDBRow>
+                    <MDBInput type="text" value={search} label="Search by author name or last name..." onChange={({ target }) => setSearch(target.value)} />
+                </MDBRow>
                 <table className='table table-striped' aria-labelledby="tabelLabel">
                     <thead>
                         <tr>

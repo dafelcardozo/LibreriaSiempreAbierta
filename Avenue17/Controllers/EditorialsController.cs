@@ -31,13 +31,13 @@ namespace Avenue17.Controllers
 
         // GET: api/Editorials
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EditorialDto>>> GetEditorial()
+        public async Task<ActionResult<IEnumerable<EditorialDto>>> GetEditorial(string? search="")
         {
           if (_context.Editorial == null)
           {
               return NotFound();
           }
-            return await (from e in _context.Editorial select new EditorialDto() { Id = e.Id, Name = e.Name, Location = e.Location, Nbooks = e.Books.Count }).ToListAsync();
+            return await (from e in _context.Editorial where e.Name.Contains(search) || e.Location.Contains(search) select new EditorialDto() { Id = e.Id, Name = e.Name, Location = e.Location, Nbooks = e.Books.Count }).ToListAsync();
         }
 
         // GET: api/Editorials/5
