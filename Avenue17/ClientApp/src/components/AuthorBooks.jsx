@@ -44,9 +44,12 @@ export default function AuthorBooks({ author}) {
         setLoading(false);
     }
 
-    return <div>
-        <h1 id="tabelLabel" >Books by { author?.name}</h1>
-        {loading ? <p><em>Loading...</em></p> : (
+    return loading ? <p><em>Loading...</em></p> : (
+        <>
+            <MDBCard>
+                <MDBCardHeader><MDBCardTitle>All of the books we know of...</MDBCardTitle></MDBCardHeader>
+                <MDBCardBody>
+                    <MDBCardText >
             <table className='table table-striped' aria-labelledby="tabelLabel">
                 <thead>
                     <tr>
@@ -66,12 +69,14 @@ export default function AuthorBooks({ author}) {
                         </tr>
                     )}
                 </tbody>
-            </table>)}
-        <div>
-            {createBookVisible && <CreateBook onPostBook={() => {
-                populateBooks();
-                
-            }} />}
-        </div>
-    </div>
+                        </table>
+                    </MDBCardText>
+                </MDBCardBody>
+                        </MDBCard>
+
+            {createBookVisible && <CreateBook onPostBook={populateBooks} />}
+  
+        </>
+    )
+        
 }
