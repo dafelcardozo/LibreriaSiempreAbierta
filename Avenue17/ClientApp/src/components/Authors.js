@@ -3,13 +3,13 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
 import '@fortawesome/fontawesome-svg-core/styles.css'
-import { MDBBtn, MDBInput, MDBModal, MDBModalDialog, MDBModalContent, MDBModalTitle, MDBModalHeader, MDBModalBody } from 'mdb-react-ui-kit';
+import { MDBCard, MDBCardBody, MDBCardText, MDBCardHeader, MDBCardTitle, MDBBtn, MDBInput, MDBModal, MDBModalDialog, MDBModalContent, MDBModalTitle, MDBModalHeader, MDBModalBody } from 'mdb-react-ui-kit';
 
 const fetchAuthors = async () => (await axios.get('api/authors')).data;
 const postAuthor = async (author) => (await axios.post('api/authors', author)).data;
 const deleteAuthor = async (authorId) => (await axios.delete(`api/authors/${authorId}`).data);
 
-function CreateAuthorForm({ onPostAuthor }) {
+function RegisterAuthorForm({ onPostAuthor }) {
     const [name, setName] = useState("");
     const [lastName, setLastName] = useState("");
 
@@ -20,13 +20,13 @@ function CreateAuthorForm({ onPostAuthor }) {
         onPostAuthor(author);
 
     }}>
-        <MDBInput type="text" name='name' required label="Please enter the author's name" value={name} onChange={({ target }) => setName(target.value)} />
-        <MDBInput type="text" name='lastName' required label="Please enter the author's last name" value={lastName} onChange={({ target }) => setLastName(target.value)} />
-        <MDBBtn type="submit" className='btn-block'>Create</MDBBtn>
+        <MDBInput type="text" wrapperClass='mb-4' name='name' required label="Please enter the author's name" value={name} onChange={({ target }) => setName(target.value)} />
+        <MDBInput type="text" wrapperClass='mb-4' name='lastName' required label="Please enter the author's last name" value={lastName} onChange={({ target }) => setLastName(target.value)} />
+        <MDBBtn type="submit" block>Create</MDBBtn>
     </form>)
 }
 
-export function Authors(props) {
+export function Authors() {
     const [authors, setAuthors] = useState([]);
     const [loading, setLoading] = useState(true);
     const [createAuthorVisible, setCreateAuthorVisible] = useState(false);
@@ -41,9 +41,11 @@ export function Authors(props) {
         setLoading(false);
     }
 
-    return <>
-        <h1 id="tabelLabel" >Authors</h1>
-        {loading ? <p><em>Loading...</em></p> : (
+    return loading ? <p><em>Loading...</em></p> : <>
+        <MDBCard>
+            <MDBCardHeader><MDBCardTitle>Search and register authors</MDBCardTitle></MDBCardHeader>
+            <MDBCardBody>
+                <MDBCardText>
             <table className='table table-striped' aria-labelledby="tabelLabel">
                 <thead>
                     <tr>
@@ -72,7 +74,10 @@ export function Authors(props) {
                     )}
                 </tbody>
             </table>
-        )}
+               
+                </MDBCardText>
+            </MDBCardBody>
+        </MDBCard>
         <MDBModal show={createAuthorVisible} setShow={setCreateAuthorVisible} >
             <MDBModalDialog>
                 <MDBModalContent>
@@ -81,7 +86,7 @@ export function Authors(props) {
                         <MDBBtn className="btn-close" color="none" aria-label="Close" onClick={() => setCreateAuthorVisible(false)} />
                     </MDBModalHeader>
                     <MDBModalBody>
-                        <CreateAuthorForm onPostAuthor={async (author) => {
+                        <RegisterAuthorForm onPostAuthor={async (author) => {
                             await populateAuthors();
                             setCreateAuthorVisible(false);
                         }} />

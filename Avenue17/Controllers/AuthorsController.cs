@@ -34,7 +34,7 @@ namespace Avenue17.Controllers
               return NotFound();
           }
             var author = await _context.Author.FindAsync(id);
-
+            
             if (author == null)
             {
                 return NotFound();

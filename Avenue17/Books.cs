@@ -29,7 +29,7 @@ namespace Avenue17
         [Column("apellidos")]
         [MaxLength(45)]
         public string LastName { get; set; }
-        [JsonIgnore]
+        
         public List<Book> Books { get; set; }
     }
     [Table("editoriales")]
