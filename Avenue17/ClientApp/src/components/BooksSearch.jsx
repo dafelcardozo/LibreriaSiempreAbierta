@@ -103,7 +103,7 @@ export default function BooksSearch() {
         {loading ? <p><em>Loading...</em></p> : (
             <div>
                 <MDBRow>
-                    <MDBInput  type="text" value={search} label="Search by book title, author's name, ISBN" onChange={({ target }) => setSearch(target.value)} />
+                    <MDBInput  type="text" value={search} label="Search by book title, author or editorial name, ISBN" onChange={({ target }) => setSearch(target.value)} />
                 </MDBRow>
                 <table className='table table-striped' aria-labelledby="tabelLabel">
                     <thead>

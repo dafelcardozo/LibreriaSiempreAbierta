@@ -1,26 +1,36 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { MDBCard, MDBCardBody, MDBCardText, MDBCardHeader, MDBCardTitle } from 'mdb-react-ui-kit';
 
-export class Home extends Component {
-  static displayName = Home.name;
-
-  render() {
+export function Home() {
     return (
-      <div>
-        <h1>Hello, world!</h1>
-        <p>Welcome to your new single-page application, built with:</p>
-        <ul>
-          <li><a href='https://get.asp.net/'>ASP.NET Core</a> and <a href='https://msdn.microsoft.com/en-us/library/67ef8sbd.aspx'>C#</a> for cross-platform server-side code</li>
-          <li><a href='https://facebook.github.io/react/'>React</a> for client-side code</li>
-          <li><a href='http://getbootstrap.com/'>Bootstrap</a> for layout and styling</li>
-        </ul>
-        <p>To help you get started, we have also set up:</p>
-        <ul>
-          <li><strong>Client-side navigation</strong>. For example, click <em>Counter</em> then <em>Back</em> to return here.</li>
-          <li><strong>Development server integration</strong>. In development mode, the development server from <code>create-react-app</code> runs in the background automatically, so your client-side resources are dynamically built on demand and the page refreshes when you modify any file.</li>
-          <li><strong>Efficient production builds</strong>. In production mode, development-time features are disabled, and your <code>dotnet publish</code> configuration produces minified, efficiently bundled JavaScript files.</li>
-        </ul>
-        <p>The <code>ClientApp</code> subdirectory is a standard React application based on the <code>create-react-app</code> template. If you open a command prompt in that directory, you can run <code>npm</code> commands such as <code>npm test</code> or <code>npm install</code>.</p>
-      </div>
+        <MDBCard>
+            <MDBCardHeader><MDBCardTitle>Welcome to Avenue 17 - a demo test in ASP.Net, C# and React.js!</MDBCardTitle></MDBCardHeader>
+            <MDBCardBody>
+                <MDBCardText >
+                    <p>Avenue17 is a demo application of my programming abilities in ASP.Net, C#, and Javascript/React plus Azure and SQL Server. </p>
+
+                    <h4>Deployment and local installation</h4>
+                    <p>Avenue17 is currently deployed in Azure, at this very same URL you're using.</p>
+                    <p> To run it in your local development server, just clone or fork my code <a href="https://github.com/dafelcardozo/LibreriaSiempreAbierta">repository</a> with Visual Studio 2022 and configure the database connection string, cadenaLibreria, in your local Secrets repository.
+                        It targets .Net Framework 7.</p>
+                    <p>You can run EF migrations to create the local database, but a database creation script is also provided and may be easier to use in some cases.
+                        A data insertion script with a few thousands of book records is also provided.
+                    </p>
+                    <h4>Architecture</h4>
+                    <p>Avenue17 is an ASP .Net Core application, and uses a REST architecture through Entity Framework 7 models and Web API controlers, and a view layer in Node and React.</p>
+
+                    <p>The SQL Server database is also deployed in Azure.</p>
+
+                    <p>The view layer uses several third-party Javascript libraries (many thanks to):</p>
+                    <ul>
+                        <li>React-Select and React-MultiSelect for two very specific but extremely important components</li>
+                        <li>MDBootstrap React provides the general Look & Feel and it's React based components.</li>
+                        <li>the Font-Awesome icons and their React mappings</li>
+                    </ul>
+                    <p>Avenue17 is aplication for libraries management, and includes functions of listing and registering books, authors and publishers.</p>
+                </MDBCardText>
+            </MDBCardBody>
+        </MDBCard>
     );
-  }
+    
 }
