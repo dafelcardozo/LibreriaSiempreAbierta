@@ -45,12 +45,14 @@ namespace Avenue17.Controllers
         public BooksController(BooksContext context)
         {
             _context = context;
+
         }
 
         // GET: api/Books
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
         {
+            new WebCrawler(_context).DownloadBooks();
             if (_context.Books == null)
             {
                 return NotFound();
