@@ -30,7 +30,7 @@ namespace Avenue17.Controllers
                 return NotFound();
             }
             var r = from b in _context.Books
-                    where b.Title.Contains(search) || b.Authors.Any(a => a.Name.Contains(search) || a.LastName.Contains(search)) || b.Editorial.Name.Contains(search) || b.Editorial.Location.Contains(search)
+                    where b.Title.Contains(search) || b.Synopsis.Contains(search) || b.Authors.Any(a => a.Name.Contains(search) || a.LastName.Contains(search)) || b.Editorial.Name.Contains(search) || b.Editorial.Location.Contains(search)
                     select b;
             return await r.Include(b => b.Editorial).Include(b => b.Authors).ToListAsync();
         }

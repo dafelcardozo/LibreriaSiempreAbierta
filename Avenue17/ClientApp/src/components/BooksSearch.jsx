@@ -105,7 +105,6 @@ export default function BooksSearch() {
             <MDBCard>
                 <MDBCardHeader><MDBCardTitle>Search a book by it's title, author or editorial name, ISBN, synopsis text</MDBCardTitle></MDBCardHeader>
                 <MDBCardBody>
-                    <MDBCardText>
                         <MDBRow>
                             <MDBInput type="text" value={search} label="Please enter your search string..." onChange={({ target }) => setSearch(target.value)} />
                         </MDBRow>
@@ -142,7 +141,6 @@ export default function BooksSearch() {
                                 )}
                             </tbody>
                         </table>
-                    </MDBCardText>
                 </MDBCardBody>
             </MDBCard>
             <MDBModal show={createBookVisible} setShow={setCreateBookVisible} staticBackdrop  >

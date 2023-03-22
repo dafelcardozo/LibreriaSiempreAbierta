@@ -45,37 +45,34 @@ export function Authors() {
         <MDBCard>
             <MDBCardHeader><MDBCardTitle>Search and register authors</MDBCardTitle></MDBCardHeader>
             <MDBCardBody>
-                <MDBCardText>
-            <table className='table table-striped' aria-labelledby="tabelLabel">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Name</th>
-                        <th>Last Name</th>
-                        <th>Books</th>
-                        <th><MDBBtn onClick={() => setCreateAuthorVisible(true)}><FontAwesomeIcon icon={faPlus} /></MDBBtn></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {authors?.map(({ id, name, lastName, books }) =>
-                        <tr key={id}>
-                            <td>{id}</td>
-                            <td>{name}</td>
-                            <td>{lastName}</td>
-                            <td>
-                                {books?.map(({ title }) => title).join(", ")}
-                            </td>
-                            <td>
-                                <MDBBtn onClick={async () => {
-                                    await deleteAuthor(id);
-                                    setTimeout(populateAuthors, 100);
-                                }}><FontAwesomeIcon icon={faMinus} /></MDBBtn></td>
+                <table className='table table-striped' aria-labelledby="tabelLabel">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Last Name</th>
+                            <th>Books</th>
+                            <th><MDBBtn onClick={() => setCreateAuthorVisible(true)}><FontAwesomeIcon icon={faPlus} /></MDBBtn></th>
                         </tr>
-                    )}
-                </tbody>
-            </table>
-               
-                </MDBCardText>
+                    </thead>
+                    <tbody>
+                        {authors?.map(({ id, name, lastName, books }) =>
+                            <tr key={id}>
+                                <td>{id}</td>
+                                <td>{name}</td>
+                                <td>{lastName}</td>
+                                <td>
+                                    {books?.map(({ title }) => title).join(", ")}
+                                </td>
+                                <td>
+                                    <MDBBtn onClick={async () => {
+                                        await deleteAuthor(id);
+                                        setTimeout(populateAuthors, 100);
+                                    }}><FontAwesomeIcon icon={faMinus} /></MDBBtn></td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
             </MDBCardBody>
         </MDBCard>
         <MDBModal show={createAuthorVisible} setShow={setCreateAuthorVisible} >

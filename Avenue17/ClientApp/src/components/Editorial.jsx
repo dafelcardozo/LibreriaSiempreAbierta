@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {  MDBBtn, MDBInput, MDBModal, MDBModalDialog, MDBModalContent, MDBModalTitle, MDBModalHeader, MDBModalBody } from 'mdb-react-ui-kit';
+import { MDBCard, MDBCardBody, MDBCardText, MDBCardHeader, MDBCardTitle, MDBBtn, MDBInput, MDBModal, MDBModalDialog, MDBModalContent, MDBModalTitle, MDBModalHeader, MDBModalBody } from 'mdb-react-ui-kit';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
 import '@fortawesome/fontawesome-svg-core/styles.css'
@@ -19,9 +19,9 @@ function CreateEditorialForm({ onPostEditorial }) {
         await postEditorial(editorial);
         onPostEditorial(editorial);
     }}>
-        <MDBInput type="text" name='name' label="Please enter the editorial's name" value={name} onChange={({ target }) => setName(target.value)} />
-        <MDBInput type="text" value={location} label="Please enter the editorial's location" onChange={({ target }) => setLocation(target.value)} />
-        <MDBBtn type="submit" className='btn-block'>Crear</MDBBtn>
+        <MDBInput type="text" wrapperClass='mb-4' name='name' label="Please enter the editorial's name" value={name} onChange={({ target }) => setName(target.value)} />
+        <MDBInput type="text" wrapperClass='mb-4' value={location} label="Please enter the editorial's location" onChange={({ target }) => setLocation(target.value)} />
+        <MDBBtn type="submit" block>Add</MDBBtn>
     </form>)
 }
 
@@ -40,34 +40,38 @@ export default function Editorials(props) {
         setLoading(false);
         setCreateEditorialVisible(false);
     }
-	
-    return <>
-        <h1 id="tabelLabel" >Editorials</h1>
-        {loading ? <p><em>Loading...</em></p> : (
-        <table className='table table-striped' aria-labelledby="tabelLabel">
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Name</th>
-                    <th>Location</th>
-                    <th><MDBBtn onClick={() => setCreateEditorialVisible(true)}><FontAwesomeIcon icon={faPlus} /></MDBBtn></th>
-                </tr>
-            </thead>
-            <tbody>
-                {editorials.map(({ id, name, location}) =>
-                    <tr key={id}>
-                        <td>{id}</td>
-                        <td>{name}</td>
-                        <td>{location}</td>
-                        <td><MDBBtn onClick={async () => {
-                            await deleteEditorial(id);
-                            await populateEditorials();
-                        }}><FontAwesomeIcon icon={faMinus} /></MDBBtn> </td>
-                    </tr>
-                )}
-            </tbody>
-        </table>)}
-            
+
+    return loading ? <p><em>Loading...</em></p> : (<>
+        <MDBCard>
+            <MDBCardHeader><MDBCardTitle>Editorials</MDBCardTitle></MDBCardHeader>
+            <MDBCardBody>
+                <table className='table table-striped' aria-labelledby="tabelLabel">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Location</th>
+                            <th>Books count</th>
+                            <th><MDBBtn onClick={() => setCreateEditorialVisible(true)}><FontAwesomeIcon icon={faPlus} /></MDBBtn></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {editorials.map(({ id, name, location, nbooks }) =>
+                            <tr key={id}>
+                                <td>{id}</td>
+                                <td>{name}</td>
+                                <td>{location}</td>
+                                <td>{nbooks}</td>
+                                <td><MDBBtn onClick={async () => {
+                                    await deleteEditorial(id);
+                                    await populateEditorials();
+                                }}><FontAwesomeIcon icon={faMinus} /></MDBBtn> </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </MDBCardBody>
+        </MDBCard>
         <MDBModal show={createEditorialVisible} setShow={setCreateEditorialVisible} >
             <MDBModalDialog>
                 <MDBModalContent>
@@ -81,4 +85,5 @@ export default function Editorials(props) {
             </MDBModalDialog>
         </MDBModal>
     </>
+    )
 }

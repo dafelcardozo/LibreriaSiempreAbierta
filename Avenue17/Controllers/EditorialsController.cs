@@ -1,8 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using Avenue17.Controllers;
 
 namespace Avenue17.Controllers
 {
+
+    public class EditorialDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = "";
+        public string Location { get; set; } = "";
+
+        public int Nbooks { get; set; }
+    }
+
     [Route("api/[controller]")]
     [ApiController]
     public class EditorialsController : ControllerBase
@@ -14,15 +27,17 @@ namespace Avenue17.Controllers
             _context = context;
         }
 
+        
+
         // GET: api/Editorials
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Editorial>>> GetEditorial()
+        public async Task<ActionResult<IEnumerable<EditorialDto>>> GetEditorial()
         {
           if (_context.Editorial == null)
           {
               return NotFound();
           }
-            return await _context.Editorial.ToListAsync();
+            return await (from e in _context.Editorial select new EditorialDto() { Id = e.Id, Name = e.Name, Location = e.Location, Nbooks = e.Books.Count }).ToListAsync();
         }
 
         // GET: api/Editorials/5

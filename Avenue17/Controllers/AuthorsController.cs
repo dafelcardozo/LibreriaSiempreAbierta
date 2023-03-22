@@ -1,8 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace Avenue17.Controllers
 {
+    public class AuthorDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string LastName { get; set; }
+
+        public List<BookDto> Books { get; set; }
+    }
     [Route("api/[controller]")]
     [ApiController]
     public class AuthorsController : ControllerBase
@@ -16,13 +26,14 @@ namespace Avenue17.Controllers
 
         // GET: api/Authors
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Author>>> GetAuthor()
+        public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAuthor()
         {
           if (_context.Author == null)
           {
               return NotFound();
           }
-            return await _context.Author.Include(a => a.Books).ToListAsync();
+            var result = from a in _context.Author select new AuthorDto() { Id = a.Id, Name = a.Name, LastName = a.LastName, Books = (from b in a.Books select new BookDto() { Title=b.Title, Isbn=b.Isbn}).ToList()};
+            return await result.ToListAsync();
         }
 
         // GET: api/Authors/5
