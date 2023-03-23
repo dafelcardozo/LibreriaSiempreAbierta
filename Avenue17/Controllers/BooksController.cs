@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Drawing.Printing;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Avenue17.Controllers
 {
@@ -9,7 +11,7 @@ namespace Avenue17.Controllers
         public long Isbn { get; set; } 
         public string Title { get; set; } = "";
         public string Synopsis { get; set; } = "";
-        public string NPages { get; set; } = "";
+        public int NPages { get; set; } 
         public List<int> Authors { get; set; } = new List<int>();
         public int Editorial { get; set; }
     }
@@ -23,7 +25,7 @@ namespace Avenue17.Controllers
             _context = context;
         }
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> SearchBooks(string search)
+        public async Task<ActionResult<IEnumerable<Book>>> SearchBooks(string search, int PageSize=50)
         {
             if (_context.Books == null)
             {
@@ -32,7 +34,7 @@ namespace Avenue17.Controllers
             var r = from b in _context.Books
                     where b.Title.Contains(search) || b.Synopsis.Contains(search) || b.Authors.Any(a => a.Name.Contains(search) || a.LastName.Contains(search)) || b.Editorial.Name.Contains(search) || b.Editorial.Location.Contains(search)
                     select b;
-            return await r.Include(b => b.Editorial).Include(b => b.Authors).ToListAsync();
+            return await r.Include(b => b.Editorial).Include(b => b.Authors).Take(PageSize).ToListAsync();
         }
     }
 
@@ -45,19 +47,18 @@ namespace Avenue17.Controllers
         public BooksController(BooksContext context)
         {
             _context = context;
-
         }
 
         // GET: api/Books
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
+        public async Task<ActionResult<IEnumerable<Book>>> GetBooks(int PageSize=100)
         {
-            new WebCrawler(_context).DownloadBooks();
             if (_context.Books == null)
             {
                 return NotFound();
             }
-            return await _context.Books.Include(b => b.Editorial).Include(b => b.Authors).ToListAsync();
+            var query = _context.Books.Include("Editorial").Include("Authors").Take(PageSize);
+            return await query.ToListAsync();
         }
  
 

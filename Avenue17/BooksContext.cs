@@ -19,6 +19,7 @@ namespace Avenue17
 
 
     [Table("autores")]
+    [Index(nameof(Name), nameof(LastName))]
     public class Author
     {
         public int Id { get; set; }
@@ -30,7 +31,7 @@ namespace Avenue17
         [MaxLength(45)]
         public string LastName { get; set; }
         
-        public List<Book> Books { get; set; }
+        public List<Book> Books { get; set; } = new List<Book>();
     }
     [Table("editoriales")]
     public class Editorial
@@ -56,7 +57,7 @@ namespace Avenue17
         [Column("sinopsis")]
         public string Synopsis { get; set; } = "";
         [Column("n_paginas")]
-        public string NPages { get; set; } = "";
+        public int NPages { get; set; } 
         [JsonProperty("Authors")]
         public List<Author> Authors { get; set; }=new List<Author>();
         [JsonProperty("Editorial")]

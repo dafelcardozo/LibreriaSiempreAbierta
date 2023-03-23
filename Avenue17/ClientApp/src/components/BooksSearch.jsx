@@ -90,10 +90,10 @@ export default function BooksSearch() {
     const populateBooks = async () => {
         let books;
         if (search.trim()) {
-            const response = await fetch(`api/search?search=${search.trim()}`);
+            const response = await fetch(`api/search?search=${search.trim()}&pageSize=50`);
             books = await response.json();
         } else {
-            const response = await fetch('api/books');
+            const response = await fetch('api/books?pageSize=50');
             books = await response.json();
         }
         setBooks(books);
