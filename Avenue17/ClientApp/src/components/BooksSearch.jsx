@@ -40,10 +40,10 @@ function RegisterBookForm({ onPostBook }) {
     const [isbn, setIsbn] = useState("");
     const [Title, setTitle] = useState("");
     const [Synopsis, setSynopsis] = useState("");
-    const [NPages, setNPages] = useState("");
+    const [nPages, setNPages] = useState("");
     const [editorial, setEditorial] = useState(0);
     const [editorials, setEditorials] = useState([]);
-    const [Authors, setAuthors] = useState([]);
+    const [authors, setAuthors] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const populateEditorials = async () => {
@@ -58,7 +58,7 @@ function RegisterBookForm({ onPostBook }) {
     return <form onSubmit={async (e) => {
         e.preventDefault();
         const book = {
-            isbn: isbn, Title, Synopsis, Authors: Authors.map(({ value }) => value), NPages, Editorial: editorial,
+            isbn: isbn, Title, Synopsis, authors: authors.map(({ value }) => value), nPages, editorial: editorial,
         };
         await postBook(book);
         onPostBook(book);
@@ -66,12 +66,12 @@ function RegisterBookForm({ onPostBook }) {
         <MDBInput type="number" wrapperClass='mb-4' name='ISBN' label="Please enter the book's ISBN" required value={isbn} onChange={({ target }) => setIsbn(target.value)} />
         <MDBInput type="text" wrapperClass='mb-4' name='title' label="Please enter the book's title" required value={Title} onChange={({ target }) => setTitle(target.value)} />
         <MDBTextArea type="text" wrapperClass='mb-4' name='synopsis' rows={4} required label="Please enter a synopsis" value={Synopsis} onChange={({ target }) => setSynopsis(target.value)} />
-        <MDBInput type="text" wrapperClass='mb-4' name='npages' label="Please enter a number of pages" required value={NPages} onChange={({ target }) => setNPages(target.value)} />
+        <MDBInput type="text" wrapperClass='mb-4' name='npages' label="Please enter a number of pages" required value={nPages} onChange={({ target }) => setNPages(target.value)} />
         <Select wrapperClass='mb-4' options={editorials.map(({ id, name, location }) => ({ value: id, label: `${name} at ${location}` }))}
-            onChange={({ value, label }) => setEditorial(value)} placeholder="Select an editorial..." />
+            onChange={({ value }) => setEditorial(value)} placeholder="Select an editorial..." />
         <br />
         <MDBRow className='mb-4'>
-            <AuthorsList authors={Authors} onListUpdated={(authors) => setAuthors(authors)}></AuthorsList>
+            <AuthorsList authors={authors} onListUpdated={(authors) => setAuthors(authors)}></AuthorsList>
         </MDBRow>
         <MDBBtn type="submit" block>Add</MDBBtn>
     </form>
@@ -125,14 +125,14 @@ export default function BooksSearch() {
                             </tr>
                         </thead>
                         <tbody>
-                            {books.map(({ isbn, title, synopsis, nPages, Authors, Editorial }) =>
+                            {books.map(({ isbn, title, synopsis, nPages, authors, editorial }) =>
                                 <tr key={isbn}>
                                     <td>{isbn}</td>
                                     <td>{title}</td>
                                     <td>{synopsis}</td>
                                     <td>{nPages}</td>
-                                    <td>{Authors?.map(({ name, lastName }) => `${name} ${lastName}`).join(', ')}</td>
-                                    <td>{Editorial.name} ({Editorial.location})</td>
+                                    <td>{authors?.map(({ name, lastName }) => `${name} ${lastName}`).join(', ')}</td>
+                                    <td>{editorial.name} ({editorial.location})</td>
                                     <td><MDBBtn onClick={async () => {
                                         await deleteBook(isbn);
                                         setTimeout(populateBooks, 100);

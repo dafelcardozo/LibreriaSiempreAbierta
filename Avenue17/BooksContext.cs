@@ -23,17 +23,16 @@ namespace Avenue17
     public class Author
     {
         public int Id { get; set; }
-
         [Column("nombre")]
         [MaxLength(45)]
         public string Name{ get; set; }
         [Column("apellidos")]
         [MaxLength(45)]
         public string LastName { get; set; }
-        
         public List<Book> Books { get; set; } = new List<Book>();
     }
     [Table("editoriales")]
+    [Index(nameof(Name), nameof(Location))]
     public class Editorial
     {
         public int Id { get; set; }
@@ -43,7 +42,6 @@ namespace Avenue17
         [Column("sede")]
         [MaxLength(45)]
         public string Location { get; set; } = "";
-
         public List<Book> Books { get; set; }= new List<Book>();
     }
     [Table("libros")]
@@ -57,10 +55,8 @@ namespace Avenue17
         [Column("sinopsis")]
         public string Synopsis { get; set; } = "";
         [Column("n_paginas")]
-        public int NPages { get; set; } 
-        [JsonProperty("Authors")]
+        public int NPages { get; set; }
         public List<Author> Authors { get; set; }=new List<Author>();
-        [JsonProperty("Editorial")]
         public required Editorial Editorial { get; set; }
     }
 }
