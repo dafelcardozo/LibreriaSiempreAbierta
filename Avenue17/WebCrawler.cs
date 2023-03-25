@@ -121,8 +121,6 @@ namespace Avenue17
                     b.VolumeInfo.EditorialRecord = editorial;
                     _context.SaveChanges();
                 }
-                if (b.VolumeInfo.EditorialRecord == null)
-                    throw new Exception();
 
             });
 
