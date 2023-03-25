@@ -1,7 +1,9 @@
 /****** Script for SelectTopNRows command from SSMS  ******/
 SELECT count(*) from dbo.libros;
 select count(*) from autores;
-select count(distinct editoriales.nombre) from editoriales;
+select count(*) from editoriales;
+select count(*), nombre, sede from editoriales
+group by nombre, sede having count(*) = 0;
 select count(*) from dbo.AuthorBook;
 
 select count(*) from libros 

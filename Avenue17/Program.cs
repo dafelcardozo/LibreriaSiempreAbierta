@@ -5,7 +5,7 @@ using System;
 var builder = WebApplication.CreateBuilder(args);
 var connString = builder.Configuration.GetConnectionString("cadenaLibreria");
 builder.Services.AddDbContext<BooksContext>(options => options
-    .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
+  //  .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
         .UseSqlServer(connString));
 builder.Services.AddControllersWithViews();
 builder.Services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
@@ -24,8 +24,10 @@ if (!app.Environment.IsDevelopment())
 using (var scope = app.Services.CreateScope())
 {
     var crawler = scope.ServiceProvider.GetRequiredService<WebCrawler>();
+    //await crawler.DownloadGoogleBooks();
     await crawler.SaveBooks();
 }
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
