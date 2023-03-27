@@ -1,6 +1,5 @@
 using Avenue17;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 var builder = WebApplication.CreateBuilder(args);
 var connString = builder.Configuration.GetConnectionString("cadenaLibreria");
@@ -20,14 +19,14 @@ if (!app.Environment.IsDevelopment())
 }
 
 // Uncommment to use the crawler to feed the initial database
-
+/*
 using (var scope = app.Services.CreateScope())
 {
     var crawler = scope.ServiceProvider.GetRequiredService<WebCrawler>();
     //await crawler.DownloadGoogleBooks();
     await crawler.SaveBooks();
 }
-
+*/
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -39,4 +38,3 @@ app.MapControllerRoute(
 app.MapFallbackToFile("index.html");
 app.Run();
 
-// remote: ConnectionStrings:cadenaLibreria = Server=tcp:avenue17-felipe-cardozo.database.windows.net,1433;Initial Catalog=servicio-avenue17;Persist Security Info=False;User ID=felipe-cardozo;Password=JuanDavid2009;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;

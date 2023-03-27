@@ -26,7 +26,7 @@ namespace Avenue17.Controllers
 
         // GET: api/Authors
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAuthor(string? search = "")
+        public async Task<ActionResult<IEnumerable<Author>>> GetAuthor(string? search = "")
         {
             if (_context.Author == null)
             {
@@ -35,14 +35,8 @@ namespace Avenue17.Controllers
             var result = from a
                          in _context.Author
                          where a.Name.Contains(search) || a.LastName.Contains(search)
-                         select new AuthorDto()
-                         {
-                             Id = a.Id,
-                             Name = a.Name,
-                             LastName = a.LastName,
-                             Books = (from b in a.Books select new BookDto() { Title = b.Title, Isbn = b.Isbn }).ToList()
-                         };
-            return await result.ToListAsync();
+                         select a;
+            return await result.Include("Books").ToListAsync();
         }
 
         // GET: api/Authors/5

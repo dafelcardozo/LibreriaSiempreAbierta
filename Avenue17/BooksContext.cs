@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
 
 namespace Avenue17
 {
@@ -19,7 +18,7 @@ namespace Avenue17
 
 
     [Table("autores")]
-    [Index(nameof(Name), nameof(LastName))]
+    [Index(nameof(Name), nameof(LastName), IsUnique = true)]
     public class Author
     {
         public int Id { get; set; }
@@ -32,7 +31,7 @@ namespace Avenue17
         public List<Book> Books { get; set; } = new List<Book>();
     }
     [Table("editoriales")]
-    [Index(nameof(Name), nameof(Location))]
+    [Index(nameof(Name), nameof(Location), IsUnique = true)]
     public class Editorial
     {
         public int Id { get; set; }

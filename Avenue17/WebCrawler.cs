@@ -1,15 +1,22 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.IdentityModel.Tokens;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System;
+using System.Globalization;
 
 namespace Avenue17
 {
+    public static class StringExtensions
+    {
+        public static string Capitalize(this string s)
+        {
+            if (String.IsNullOrEmpty(s))
+            {
+                return s;
+            }
 
+            return s[0].ToString().ToUpper() + s.Substring(1);
+        }
+    }
     public class WebCrawler
     {
         private readonly BooksContext _context;
@@ -43,21 +50,20 @@ namespace Avenue17
             public List<IndustryIdentifier> IndustryIdentifiers { get; set; } = new List<IndustryIdentifier>();
             public string Description { get; set; } = "";
             public List<string> Authors { get; set; } = new List<string>();
-            public List<Author> AuthorRecords { get; } = new List<Author>();
-
             public string Publisher { get; set; } = "";
-            public Editorial? EditorialRecord { get; set; }
-
             public string Title { get; set; } = "";
             public int PageCount { get; set; }
 
-
+            public long? BestIsbn {
+                get {
+                    return (from ii in IndustryIdentifiers where ii.ParseIsbn is not null select ii.ParseIsbn).Max();
+                } 
+            }
         }
 
         public class Book2
         {
             public VolumeInfo VolumeInfo { get; set; }
-
             public string Category { get; set; }
         }
         public class Volume
@@ -87,89 +93,51 @@ namespace Avenue17
                     books.AddRange(response.items);
                 }
             }
-            //Console.WriteLine(JsonSerializer.Serialize(books));
             Console.WriteLine($"Initial books count: {books.Count}");
             return books;
         }
         private string Truncate(string s, int maxLength)
         {
+            s = s.Trim();
             return s.Length <= maxLength ? s : s.Substring(0, maxLength);
         }
-
-        public void InsertOrUpdate(Author entity)
-        {
-            _context.Entry(entity).State = entity.Id == 0 ?
-                                           EntityState.Added :
-                                           EntityState.Modified;
-            _context.SaveChanges();
-        }
+ 
         public async Task<string> SaveBooks()
         {
-            var books = (await DownloadGoogleBooks()).FindAll(b => b.VolumeInfo.IndustryIdentifiers.Count > 0);
-            books.ForEach(b => {
-                var pe = new { Location = "Somewhere on the web", Name = Truncate(b.VolumeInfo.Publisher, 45) };
-                var re = from editorial in _context.Editorial where editorial.Location == pe.Location && editorial.Name == pe.Name select editorial;
+            var books = (await DownloadGoogleBooks()).FindAll(b => b.VolumeInfo.IndustryIdentifiers.Any());
+            var distinctPublishers = (from b in books select Truncate(CultureInfo.InvariantCulture.TextInfo.ToTitleCase(b.VolumeInfo.Publisher.ToLower()), 45)).Distinct().Order();
+            _context.Editorial.AddRange(from p in distinctPublishers select new Editorial() { Name = p, Location = "Somewhere on the web" });
+            _context.SaveChanges();
 
-                if (re.Any())
-                {
-                    b.VolumeInfo.EditorialRecord = re.First();
-                }
-                else
-                {
-                    var editorial = new Editorial() { Location = pe.Location, Name = pe.Name };
-                    _context.Editorial.Add(editorial);
-                    b.VolumeInfo.EditorialRecord = editorial;
-                    _context.SaveChanges();
-                }
+            var distinctAuthors = (from b in books from a in b.VolumeInfo.Authors select CultureInfo.InvariantCulture.TextInfo.ToTitleCase(a.ToLower())).Distinct();
+            var newAuthors = from n in distinctAuthors select n.Split() into names select new Author() { Name = Truncate(names[0], 45), LastName = Truncate(string.Join(' ', names[1..]), 45) };
+            _context.Author.AddRange(newAuthors);
+            _context.SaveChanges();
 
-            });
+            var booksToInsert = from b in books
+                                from a in b.VolumeInfo.Authors
+                                join editorial in _context.Editorial on Truncate(CultureInfo.InvariantCulture.TextInfo.ToTitleCase(b.VolumeInfo.Publisher.ToLower()), 45) equals editorial.Name
+                                join author in _context.Author on new { Name = Truncate(a.Split(' ')[0], 45), LastName = Truncate(string.Join(' ', a.Split(' ')[1..]), 45) } equals new { author.Name, author.LastName }
+                                where b.VolumeInfo.BestIsbn is not null
+                                group new 
+                                { 
+                                    Editorial=editorial,
+                                    Author=author, 
+                                    Isbn=b.VolumeInfo.BestIsbn.Value,
+                                    Synopsis=b.VolumeInfo.Description,
+                                    b.VolumeInfo.Title,
+                                    NPages=b.VolumeInfo.PageCount
+                                } by b.VolumeInfo.BestIsbn;
+            var range = from b in booksToInsert select new Book() { 
+                Isbn = b.First().Isbn, 
+                Editorial = b.First().Editorial, 
+                NPages = b.First().NPages, 
+                Synopsis = b.First().Synopsis, 
+                Title = b.First().Title,
+                Authors=( from aa in b select aa.Author).ToList() };
+            _context.Books.AddRange(range);
+            _context.SaveChanges();
 
-            foreach (var b in books)
-            {
-                foreach (var a in b.VolumeInfo.Authors)
-                {
-                    var names = a.Split(" ");
-                    var aaa = new { Name = Truncate(names[0], 45), LastName = Truncate(string.Join(' ', names[1..]), 45) };
-                    var re = from aut in _context.Author where aut.Name == aaa.Name && aut.LastName == aaa.LastName select aut;
-                    if (re.Any())
-                    {
-                        b.VolumeInfo.AuthorRecords.Add(re.First());
-                    }
-                    else
-                    {
-                        var na = new Author() { Name = aaa.Name, LastName = aaa.LastName };
-                        _context.Author.Add(na);
-                        b.VolumeInfo.AuthorRecords.Add(na);
-                        _context.SaveChanges();
-                    }
-                }
-            }
-            Console.WriteLine($"Authors: {_context.Author.Count()}");
-
-            foreach (var b in books)
-            {
-                if (b.VolumeInfo.AuthorRecords.IsNullOrEmpty())
-                    continue;
-                if (b.VolumeInfo.EditorialRecord is null)
-                    continue;
-                var result = from i in b.VolumeInfo.IndustryIdentifiers where i.ParseIsbn != null && !_context.Books.Any(bb => bb.Isbn == i.ParseIsbn.Value) select i.ParseIsbn.Value;
-                if (!result.Any())
-                    continue;
-                long isbn = result.First();
-                var book = new Book()
-                {
-                    Authors = b.VolumeInfo.AuthorRecords,
-                    Editorial = b.VolumeInfo.EditorialRecord,
-                    Isbn = isbn,
-                    Synopsis = b.VolumeInfo.Description,
-                    Title = b.VolumeInfo.Title,
-                    NPages = b.VolumeInfo.PageCount
-                };
-                Console.Write(".");
-                _context.Add(book);
-                _context.SaveChanges();
-            }
-            
             return "Done";
         }
     }
