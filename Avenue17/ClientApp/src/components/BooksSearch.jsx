@@ -108,7 +108,6 @@ export default function BooksSearch() {
     const [search, setSearch] = useState('');
     const [createBookVisible, setCreateBookVisible] = useState(false);
     const [terms, setTerms] = useState({});
-
     const [booksState, dispatch] = useReducer(reducer, { books: [] });
     const { books } = booksState;
 
