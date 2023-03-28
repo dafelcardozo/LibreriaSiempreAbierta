@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { MDBCard, MDBCardBody, MDBCardText, MDBCardHeader, MDBCardTitle, MDBRow, MDBCol, MDBBtn, MDBInput, MDBTextArea, MDBModalFooter, MDBModal, MDBModalDialog, MDBModalContent, MDBModalTitle, MDBModalHeader, MDBModalBody } from 'mdb-react-ui-kit';
+import { MDBCard, MDBCardBody, MDBCardHeader, MDBCardTitle, MDBRow, MDBBtn, MDBInput, MDBTextArea, MDBModal, MDBModalDialog, MDBModalContent, MDBModalTitle, MDBModalHeader, MDBModalBody } from 'mdb-react-ui-kit';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
 import '@fortawesome/fontawesome-svg-core/styles.css'
 import { MultiSelect } from "react-multi-select-component";
 import Select from 'react-select'
+import { useParams } from 'react-router-dom'
 
 const postBook = async (book) => (await axios.post('api/books', { ...book })).data;
 const deleteBook = async (id) => (await axios.delete(`api/books/${id}`)).data;
@@ -45,7 +46,7 @@ function RegisterBookForm({ onPostBook }) {
     const [editorials, setEditorials] = useState([]);
     const [authors, setAuthors] = useState([]);
     const [loading, setLoading] = useState(true);
-
+    
     const populateEditorials = async () => {
         const data = await fetchEditorials();
         setEditorials(data);
@@ -54,7 +55,7 @@ function RegisterBookForm({ onPostBook }) {
     useEffect(() => {
         populateEditorials();
     }, [loading]);
-
+   
     return <form onSubmit={async (e) => {
         e.preventDefault();
         const book = {
@@ -77,25 +78,39 @@ function RegisterBookForm({ onPostBook }) {
     </form>
 }
 
-export default function BooksSearch() {
+function FieldSpecificSearch({ terms, onTermsUpdated}) {
+    const [terminology, setTerminology] = useState(terms || {});
+    return Object.keys(terms).map((field) => (<li key={field}>{field}:{terminology[field]}<button onClick={() => {
+        delete terminology[field];
+        setTerminology({ ...terminology });
+        onTermsUpdated(terminology);
+    }}>X</button></li>));
+}
+
+export default function BooksSearch(props) {
+    const { isbn } = useParams();
     const [books, setBooks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [createBookVisible, setCreateBookVisible] = useState(false);
+    const [terms, setTerms] = useState({});
 
     useEffect(() => {
         populateBooks();
-    }, [search]);
+    }, [search, terms]);
+
+    useEffect(() => {
+        console.info({ props });
+        if (isbn) {
+            setTerms({ isbn });
+        }
+    }, [isbn]);
 
     const populateBooks = async () => {
-        let books;
-        if (search.trim()) {
-            const response = await fetch(`api/search?search=${search.trim()}&pageSize=50`);
-            books = await response.json();
-        } else {
-            const response = await fetch('api/books?pageSize=50');
-            books = await response.json();
-        }
+        const termedSearch = Object.keys(terms).map((field) => `${field}=${terms[field]}`).join('&');
+        const response = await fetch(`api/books?search=${search.trim()}&pageSize=50&${termedSearch}`);
+        console.info({response});
+        const books = await response.json();
         setBooks(books);
         setLoading(false);
     }
@@ -105,6 +120,9 @@ export default function BooksSearch() {
             <MDBCard>
                 <MDBCardHeader><MDBCardTitle>Search a book by it's title, author or editorial name, ISBN, synopsis text</MDBCardTitle></MDBCardHeader>
                 <MDBCardBody>
+                    <MDBRow>
+                        <FieldSpecificSearch terms={terms} onTermsUpdated={setTerms} />
+                    </MDBRow>
                     <MDBRow>
                         <MDBInput type="text" value={search} label="Please enter your search string..." onChange={({ target }) => setSearch(target.value)} />
                     </MDBRow>

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Data;
-using System.Drawing.Printing;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+
 
 namespace Avenue17.Controllers
 {
@@ -15,28 +15,7 @@ namespace Avenue17.Controllers
         public List<int> Authors { get; set; } = new List<int>();
         public int Editorial { get; set; }
     }
-    [Route("api/search")]
-    [ApiController]
-    public class SearchController:ControllerBase
-    {
-        private readonly BooksContext _context;
-        public SearchController(BooksContext context)
-        {
-            _context = context;
-        }
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> SearchBooks(string search, int PageSize=50)
-        {
-            if (_context.Books == null)
-            {
-                return NotFound();
-            }
-            var r = from b in _context.Books
-                    where b.Title.Contains(search) || b.Synopsis.Contains(search) || b.Authors.Any(a => a.Name.Contains(search) || a.LastName.Contains(search)) || b.Editorial.Name.Contains(search) || b.Editorial.Location.Contains(search)
-                    select b;
-            return await r.Include(b => b.Editorial).Include(b => b.Authors).Take(PageSize).ToListAsync();
-        }
-    }
+  
 
     [Route("api/[controller]")]
     [ApiController]
@@ -51,14 +30,17 @@ namespace Avenue17.Controllers
 
         // GET: api/Books
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooks(int PageSize=100)
+        public async Task<ActionResult<IEnumerable<Book>>> GetBooks(long? isbn, int? PageSize, string? search = "")
         {
             if (_context.Books == null)
             {
                 return NotFound();
             }
-            var query = _context.Books.Include("Editorial").Include("Authors").Take(PageSize);
-            return await query.ToListAsync();
+            var query = from b in _context.Books
+                        where (isbn == null || (b.Isbn == isbn)) && 
+                        (search.IsNullOrEmpty() || b.Title.Contains(search) || b.Synopsis.Contains(search) || b.Authors.Any(a => a.Name.Contains(search) || a.LastName.Contains(search)) || b.Editorial.Name.Contains(search) || b.Editorial.Location.Contains(search))
+                        select b;
+            return await query.Include("Editorial").Include("Authors").Take(PageSize??100).ToListAsync();
         }
  
 

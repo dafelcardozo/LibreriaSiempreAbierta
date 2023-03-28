@@ -6,6 +6,8 @@ import './custom.css';
 import 'mdb-react-ui-kit/dist/css/mdb.min.css'
 import "@fortawesome/fontawesome-free/css/all.min.css"
 
+
+
 export default class App extends Component {
   static displayName = App.name;
 
@@ -15,7 +17,7 @@ export default class App extends Component {
         <Routes>
           {AppRoutes.map((route, index) => {
             const { element, ...rest } = route;
-            return <Route key={index} {...rest} element={element} />;
+              return <Route key={index} {...rest} element={element}  />;
           })}
         </Routes>
       </Layout>

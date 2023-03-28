@@ -17,8 +17,13 @@ const AppRoutes = [
         element: <Editorials />
     },
     {
-        path: '/search',
+        path: '/search/:isbn',
         element: <BooksSearch />
+    },
+    {
+        path: '/search',
+        element: <BooksSearch />,
+        exact: true
     }
 ];
 

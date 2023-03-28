@@ -26,6 +26,12 @@ function RegisterAuthorForm({ onPostAuthor }) {
     </form>)
 }
 
+function BookLink({ book }) {
+    const { isbn, title } = book;
+    const ref = `/search/${isbn }`;
+    return (<a href={ref}> { title }</a >)
+}
+
 export function Authors() {
     const [authors, setAuthors] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -65,7 +71,7 @@ export function Authors() {
                                 <td>{name}</td>
                                 <td>{lastName}</td>
                                 <td>
-                                    {books?.map(({ title }) => title).join(", ")}
+                                    {books?.map((book) => (<BookLink book={book} key={ book.isbn} />)) }
                                 </td>
                                 <td>
                                     <MDBBtn onClick={async () => {

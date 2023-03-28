@@ -1,4 +1,5 @@
 SELECT * from dbo.libros order by titulo;
+SELECT count(*) from dbo.libros ;
 select * from autores;
 select count(*) from editoriales;
 select count(*), nombre, sede from editoriales

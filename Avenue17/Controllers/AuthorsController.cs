@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Avenue17.Controllers
 {
@@ -26,7 +27,7 @@ namespace Avenue17.Controllers
 
         // GET: api/Authors
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Author>>> GetAuthor(string? search = "")
+        public async Task<ActionResult<IEnumerable<Author>>> GetAuthor(string search = "")
         {
             if (_context.Author == null)
             {
@@ -34,7 +35,7 @@ namespace Avenue17.Controllers
             }
             var result = from a
                          in _context.Author
-                         where a.Name.Contains(search) || a.LastName.Contains(search)
+                         where search.IsNullOrEmpty() || a.Name.Contains(search) || a.LastName.Contains(search)
                          select a;
             return await result.Include("Books").ToListAsync();
         }
