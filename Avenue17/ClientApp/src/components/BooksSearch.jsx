@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import axios from 'axios';
 import { MDBCard, MDBCardBody, MDBCardHeader, MDBCardTitle, MDBRow, MDBBtn, MDBInput, MDBTextArea, MDBModal, MDBModalDialog, MDBModalContent, MDBModalTitle, MDBModalHeader, MDBModalBody } from 'mdb-react-ui-kit';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -79,7 +79,7 @@ function RegisterBookForm({ onPostBook }) {
 }
 
 function FieldSpecificSearch({ terms, onTermsUpdated}) {
-    const [terminology, setTerminology] = useState(terms || {});
+    const [terminology, setTerminology] = useState(terms ? { ...terms }:{});
     return Object.keys(terms).map((field) => (<li key={field}>{field}:{terminology[field]}<button onClick={() => {
         delete terminology[field];
         setTerminology({ ...terminology });
@@ -87,31 +87,47 @@ function FieldSpecificSearch({ terms, onTermsUpdated}) {
     }}>X</button></li>));
 }
 
-export default function BooksSearch(props) {
+
+
+function reducer(state, action) {
+    switch (action.type) {
+        case "Requested books":
+            return { books: state.books, request_url:action.request_url }
+        case "Received books":
+            delete action.type;
+            if (action.response_url.endsWith(state.request_url))
+                return { ...action }
+            else
+                return {...state}
+    }
+}
+
+export default function BooksSearch() {
     const { isbn } = useParams();
-    const [books, setBooks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [createBookVisible, setCreateBookVisible] = useState(false);
     const [terms, setTerms] = useState({});
+
+    const [booksState, dispatch] = useReducer(reducer, { books: [] });
+    const { books } = booksState;
 
     useEffect(() => {
         populateBooks();
     }, [search, terms]);
 
     useEffect(() => {
-        console.info({ props });
-        if (isbn) {
+        if (isbn) 
             setTerms({ isbn });
-        }
     }, [isbn]);
 
     const populateBooks = async () => {
         const termedSearch = Object.keys(terms).map((field) => `${field}=${terms[field]}`).join('&');
-        const response = await fetch(`api/books?search=${search.trim()}&pageSize=50&${termedSearch}`);
-        console.info({response});
+        const request_url = `api/books?search=${search.trim()}&pageSize=50&${termedSearch}`;
+        dispatch({ type: "Requested books",  request_url  });
+        const response = await fetch(request_url);
         const books = await response.json();
-        setBooks(books);
+        dispatch({ type: "Received books", books, response_url: response.url, request_url  });
         setLoading(false);
     }
 
