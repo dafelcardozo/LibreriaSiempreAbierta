@@ -37,5 +37,3 @@ app.MapControllerRoute(
 
 app.MapFallbackToFile("index.html");
 app.Run();
-
-// remote: ConnectionStrings:cadenaLibreria = Server=tcp:avenue17-felipe-cardozo.database.windows.net,1433;Initial Catalog=servicio-avenue17;Persist Security Info=False;User ID=felipe-cardozo;Password=JuanDavid2009;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
