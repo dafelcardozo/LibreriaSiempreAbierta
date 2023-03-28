@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 var connString = builder.Configuration.GetConnectionString("cadenaLibreria");
 builder.Services.AddDbContext<BooksContext>(options => options
-    .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
+    //.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
         .UseSqlServer(connString));
 builder.Services.AddControllersWithViews();
 builder.Services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
