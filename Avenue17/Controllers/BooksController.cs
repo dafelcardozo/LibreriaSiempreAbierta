@@ -2,19 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Data;
-using System.Linq;
 
 namespace Avenue17.Controllers
 {
-    public class BookDto
-    {
-        public long Isbn { get; set; } 
-        public string Title { get; set; } = "";
-        public string Synopsis { get; set; } = "";
-        public int NPages { get; set; } 
-        public List<int> Authors { get; set; } = new List<int>();
-        public int Editorial { get; set; }
-    }
+    public readonly record struct BookDto(long Isbn, string Title, string Synopsis, int NPages, List<int> Authors, int Editorial);
 
     public readonly record struct Paginator<T>(int Page, int TotalPages, int PageSize, IEnumerable<T> Data, string Search="");
 
@@ -29,9 +20,29 @@ namespace Avenue17.Controllers
             _context = context;
         }
 
+        Func<Book, object> SortFunction(string sortByField)
+        {
+            switch (sortByField.ToLower())
+            {
+                case "title":
+                    return (Book b) => b.Title;
+                case "isbn":
+                    return (Book b) => b.Isbn;
+                case "synopsis":
+                    return (Book b) => b.Synopsis;
+                case "editorial":
+                    return (Book b) => b.Editorial.Name;
+                case "npages":
+                    return (Book b) => b.NPages;
+                default:
+                    return (Book b) => b.Isbn;
+            }
+            
+        } 
+
         // GET: api/Books
         [HttpGet]
-        public async Task<ActionResult<Paginator<Book>>> GetBooks(long? isbn, int PageSize=100, int Page=0, string search = "")
+        public async Task<ActionResult<Paginator<Book>>> GetBooks(long? isbn, bool asc, int PageSize=20, int Page=0, string search = "", string sortBy="")
         {
             if (_context.Books == null)
             {
@@ -43,11 +54,13 @@ namespace Avenue17.Controllers
                 isbn = l;
                 search = "";
             }
+
             var query = (from b in _context.Books
-                        where (isbn == null || (b.Isbn == isbn)) && 
-                        (search.IsNullOrEmpty() || b.Title.Contains(search) || b.Synopsis.Contains(search) || b.Authors.Any(a => a.Name.Contains(search) || a.LastName.Contains(search)) || b.Editorial.Name.Contains(search) || b.Editorial.Location.Contains(search))
-                        select b).Include("Editorial").Include("Authors").Skip(PageSize*Page).Take(PageSize);
-            return new Paginator<Book>() { Data = await query.ToListAsync(), PageSize=PageSize, Page=Page};
+                         where (isbn == null || (b.Isbn == isbn)) &&
+                         (search.IsNullOrEmpty() || b.Title.Contains(search) || b.Synopsis.Contains(search) || b.Authors.Any(a => a.Name.Contains(search) || a.LastName.Contains(search)) || b.Editorial.Name.Contains(search) || b.Editorial.Location.Contains(search))
+                         select b).Include("Editorial").Include("Authors");
+            var sorted = asc?query.OrderBy(SortFunction(sortBy)):query.OrderByDescending(SortFunction(sortBy));
+            return new Paginator<Book>() { Data = sorted.Skip(PageSize * Page).Take(PageSize), PageSize=PageSize, Page=Page};
         }
  
 

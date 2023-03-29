@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useState, useEffect, useReducer, useContext, createContext } from 'react';
 import axios from 'axios';
 import { MDBCard, MDBCol, MDBCardBody, MDBCardHeader, MDBCardTitle, MDBRow, MDBBtn, MDBInput, MDBTextArea, MDBModal, MDBModalDialog, MDBModalContent, MDBModalTitle, MDBModalHeader, MDBModalBody } from 'mdb-react-ui-kit';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faMinus, faXmark, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faMinus, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons'
 import '@fortawesome/fontawesome-svg-core/styles.css'
 import { MultiSelect } from "react-multi-select-component";
 import Select from 'react-select'
@@ -105,6 +105,13 @@ function reducer(state, action) {
     }
 }
 
+const SortContext = createContext();
+
+function SortableColumn({ children, field }) {
+    const { field: current, asc, onChange } = useContext(SortContext);
+    return <th onClick={() => onChange(field) }> {children}  {current === field && (asc ? <FontAwesomeIcon icon={faArrowUp} /> : <FontAwesomeIcon icon={faArrowDown} />)}</th>
+}
+
 export default function BooksSearch() {
     const { isbn } = useParams();
     const [loading, setLoading] = useState(true);
@@ -113,19 +120,23 @@ export default function BooksSearch() {
     const [terms, setTerms] = useState({});
     const [booksState, dispatch] = useReducer(reducer, { books: [] });
     const { page, pageSize, books } = booksState;
+    const [sort, setSort] = useState({ field: "", asc: true});
 
     useEffect(() => {
         populateBooks();
-    }, [search, terms]);
+    }, [search, terms, sort]);
 
     useEffect(() => {
         if (isbn) 
             setTerms({ isbn });
     }, [isbn]);
 
+    const sortChange = (field) => setSort({ field, asc: !sort.asc });
+    
+
     const populateBooks = async () => {
         const termedSearch = Object.keys(terms).map((field) => `${field}=${terms[field]}`).join('&');
-        const request_url = `api/books?search=${search.trim()}&${termedSearch}`;
+        const request_url = `api/books?search=${search.trim()}&sortBy=${sort.field}&asc=${sort.asc}&${termedSearch}`;
         dispatch({ type: "Requested books",  request_url  });
         const response = await fetch(request_url);
         const { page, pageSize, data } = await response.json();
@@ -141,21 +152,23 @@ export default function BooksSearch() {
                     <FieldSpecificSearch terms={terms} onTermsUpdated={setTerms} />
                     <MDBInput type="search" name="bookSearch" value={search} label="Please enter your search string..." onChange={({ target }) => setSearch(target.value)} />
                     <table className='table table-striped' aria-labelledby="tableLabel">
+                        <SortContext.Provider value={{ ...sort, onChange: sortChange }} >
                         <thead>
                             <tr>
-                                <th>Id</th>
-                                <th>Title</th>
-                                <th>Synopsis</th>
-                                <th># of pages</th>
+                                <SortableColumn field="isbn">ISBN</SortableColumn>
+                                <SortableColumn field="title">Title</SortableColumn>
+                                <SortableColumn field="synopsis">Synopsis</SortableColumn>
+                                <SortableColumn field="nPages"># of pages</SortableColumn>
                                 <th>Authors</th>
-                                <th>Editorial</th>
+                                <SortableColumn field="editorial">Publisher</SortableColumn>
                                 <th>
                                     <MDBBtn onClick={() => setCreateBookVisible(true)}>
                                         <FontAwesomeIcon icon={faPlus} />
                                     </MDBBtn>
                                 </th>
                             </tr>
-                        </thead>
+                            </thead>
+                        </SortContext.Provider>
                         <tbody>
                             {books.map(({ isbn, title, synopsis, nPages, authors, editorial }) =>
                                 <tr key={isbn}>
@@ -164,7 +177,7 @@ export default function BooksSearch() {
                                     <td><LengthExpandable text={synopsis}></LengthExpandable></td>
                                     <td>{nPages}</td>
                                     <td>{authors?.map(({ name, lastName }) => `${name} ${lastName}`).join(', ')}</td>
-                                    <td>{editorial.name} ({editorial.location})</td>
+                                    <td>{editorial.name} {editorial.location}</td>
                                     <td><MDBBtn onClick={async () => {
                                         await deleteBook(isbn);
                                         setTimeout(populateBooks, 100);

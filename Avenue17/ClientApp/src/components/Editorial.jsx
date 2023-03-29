@@ -47,7 +47,7 @@ export default function Editorials(props) {
             <MDBCardHeader><MDBCardTitle>Editorials</MDBCardTitle></MDBCardHeader>
             <MDBCardBody>
                 <MDBRow>
-                    <MDBInput type="text" value={search} label="Search by editorial name or location" onChange={({ target }) => setSearch(target.value)} />
+                    <MDBInput type="text" value={search} label="Search by publisher name or location" onChange={({ target }) => setSearch(target.value)} />
                 </MDBRow>
                 <table className='table table-striped' aria-labelledby="tabelLabel">
                     <thead>
