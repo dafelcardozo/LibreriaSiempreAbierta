@@ -5,18 +5,6 @@ using System.Globalization;
 
 namespace Avenue17
 {
-    public static class StringExtensions
-    {
-        public static string Capitalize(this string s)
-        {
-            if (String.IsNullOrEmpty(s))
-            {
-                return s;
-            }
-
-            return s[0].ToString().ToUpper() + s.Substring(1);
-        }
-    }
     public class WebCrawler
     {
         private readonly BooksContext _context;

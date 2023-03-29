@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useReducer } from 'react';
 import axios from 'axios';
-import { MDBCard, MDBCardBody, MDBCardHeader, MDBCardTitle, MDBRow, MDBBtn, MDBInput, MDBTextArea, MDBModal, MDBModalDialog, MDBModalContent, MDBModalTitle, MDBModalHeader, MDBModalBody } from 'mdb-react-ui-kit';
+import { MDBCard, MDBCol, MDBCardBody, MDBCardHeader, MDBCardTitle, MDBRow, MDBBtn, MDBInput, MDBTextArea, MDBModal, MDBModalDialog, MDBModalContent, MDBModalTitle, MDBModalHeader, MDBModalBody } from 'mdb-react-ui-kit';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faMinus, faXmark, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import '@fortawesome/fontawesome-svg-core/styles.css'
 import { MultiSelect } from "react-multi-select-component";
 import Select from 'react-select'
@@ -87,7 +87,10 @@ function FieldSpecificSearch({ terms, onTermsUpdated}) {
     }}>X</button></li>));
 }
 
-
+function LengthExpandable({ text="", maxLength=200, }) {
+    const [expanded, setExpanded] = useState(false);
+    return expanded || text.length <= maxLength ? text : (<> {text.slice(0, maxLength)} ... <a href="#" onClick={(e) => { e.preventDefault(); setExpanded(true) }}>[expand]</a></>)
+}
 
 function reducer(state, action) {
     switch (action.type) {
@@ -109,7 +112,7 @@ export default function BooksSearch() {
     const [createBookVisible, setCreateBookVisible] = useState(false);
     const [terms, setTerms] = useState({});
     const [booksState, dispatch] = useReducer(reducer, { books: [] });
-    const { books } = booksState;
+    const { page, pageSize, books } = booksState;
 
     useEffect(() => {
         populateBooks();
@@ -122,32 +125,28 @@ export default function BooksSearch() {
 
     const populateBooks = async () => {
         const termedSearch = Object.keys(terms).map((field) => `${field}=${terms[field]}`).join('&');
-        const request_url = `api/books?search=${search.trim()}&pageSize=50&${termedSearch}`;
+        const request_url = `api/books?search=${search.trim()}&${termedSearch}`;
         dispatch({ type: "Requested books",  request_url  });
         const response = await fetch(request_url);
-        const books = await response.json();
-        dispatch({ type: "Received books", books, response_url: response.url, request_url  });
+        const { page, pageSize, data } = await response.json();
+        dispatch({ type: "Received books", books:data, page, pageSize, response_url: response.url, request_url  });
         setLoading(false);
     }
 
     return loading ? <p>< em > Loading...</em ></p > : (
         <>
             <MDBCard>
-                <MDBCardHeader><MDBCardTitle>Search a book by it's title, author or editorial name, ISBN, synopsis text</MDBCardTitle></MDBCardHeader>
+                <MDBCardHeader><MDBCardTitle>Search a book by it's title, author or editorial name, exact ISBN, synopsis text</MDBCardTitle></MDBCardHeader>
                 <MDBCardBody>
-                    <MDBRow>
-                        <FieldSpecificSearch terms={terms} onTermsUpdated={setTerms} />
-                    </MDBRow>
-                    <MDBRow>
-                        <MDBInput type="text" value={search} label="Please enter your search string..." onChange={({ target }) => setSearch(target.value)} />
-                    </MDBRow>
-                    <table className='table table-striped' aria-labelledby="tabelLabel">
+                    <FieldSpecificSearch terms={terms} onTermsUpdated={setTerms} />
+                    <MDBInput type="search" name="bookSearch" value={search} label="Please enter your search string..." onChange={({ target }) => setSearch(target.value)} />
+                    <table className='table table-striped' aria-labelledby="tableLabel">
                         <thead>
                             <tr>
                                 <th>Id</th>
                                 <th>Title</th>
                                 <th>Synopsis</th>
-                                <th>Number of pages</th>
+                                <th># of pages</th>
                                 <th>Authors</th>
                                 <th>Editorial</th>
                                 <th>
@@ -162,7 +161,7 @@ export default function BooksSearch() {
                                 <tr key={isbn}>
                                     <td>{isbn}</td>
                                     <td>{title}</td>
-                                    <td>{synopsis}</td>
+                                    <td><LengthExpandable text={synopsis}></LengthExpandable></td>
                                     <td>{nPages}</td>
                                     <td>{authors?.map(({ name, lastName }) => `${name} ${lastName}`).join(', ')}</td>
                                     <td>{editorial.name} ({editorial.location})</td>

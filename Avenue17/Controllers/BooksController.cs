@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Data;
-
+using System.Linq;
 
 namespace Avenue17.Controllers
 {
@@ -15,7 +15,8 @@ namespace Avenue17.Controllers
         public List<int> Authors { get; set; } = new List<int>();
         public int Editorial { get; set; }
     }
-  
+
+    public readonly record struct Paginator<T>(int Page, int TotalPages, int PageSize, IEnumerable<T> Data, string Search="");
 
     [Route("api/[controller]")]
     [ApiController]
@@ -30,17 +31,23 @@ namespace Avenue17.Controllers
 
         // GET: api/Books
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooks(long? isbn, int? PageSize, string? search = "")
+        public async Task<ActionResult<Paginator<Book>>> GetBooks(long? isbn, int PageSize=100, int Page=0, string search = "")
         {
             if (_context.Books == null)
             {
                 return NotFound();
             }
-            var query = from b in _context.Books
+            long l;
+            if (isbn == null && long.TryParse(search, out l))
+            {
+                isbn = l;
+                search = "";
+            }
+            var query = (from b in _context.Books
                         where (isbn == null || (b.Isbn == isbn)) && 
                         (search.IsNullOrEmpty() || b.Title.Contains(search) || b.Synopsis.Contains(search) || b.Authors.Any(a => a.Name.Contains(search) || a.LastName.Contains(search)) || b.Editorial.Name.Contains(search) || b.Editorial.Location.Contains(search))
-                        select b;
-            return await query.Include("Editorial").Include("Authors").Take(PageSize??100).ToListAsync();
+                        select b).Include("Editorial").Include("Authors").Skip(PageSize*Page).Take(PageSize);
+            return new Paginator<Book>() { Data = await query.ToListAsync(), PageSize=PageSize, Page=Page};
         }
  
 

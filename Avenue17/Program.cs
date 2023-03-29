@@ -4,7 +4,9 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 var connString = builder.Configuration.GetConnectionString("cadenaLibreria");
 builder.Services.AddDbContext<BooksContext>(options => options
-    //.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
+#if DEBUG
+        .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
+#endif
         .UseSqlServer(connString));
 builder.Services.AddControllersWithViews();
 builder.Services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
@@ -18,16 +20,15 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// Uncommment to use the crawler to feed the initial database
-/*
+// Enable first load Google Books by defining this variable
+#if FIRST_LOAD
 using (var scope = app.Services.CreateScope())
 {
     var crawler = scope.ServiceProvider.GetRequiredService<WebCrawler>();
     //await crawler.DownloadGoogleBooks();
     await crawler.SaveBooks();
 }
-*/
-
+#endif
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
