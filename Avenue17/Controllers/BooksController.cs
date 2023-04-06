@@ -7,7 +7,7 @@ namespace Avenue17.Controllers
 {
     public readonly record struct BookDto(long Isbn, string Title, string Synopsis, int NPages, List<int> Authors, int Editorial);
 
-    public readonly record struct Paginator<T>(int Page, int TotalPages, int PageSize, IEnumerable<T> Data, string Search="");
+    public readonly record struct Paginator<T>(int Page, int TotalCount, int TotalPages, int PageSize, IEnumerable<T> Data);
 
     [Route("api/[controller]")]
     [ApiController]
@@ -60,7 +60,8 @@ namespace Avenue17.Controllers
                          (search.IsNullOrEmpty() || b.Title.Contains(search) || b.Synopsis.Contains(search) || b.Authors.Any(a => a.Name.Contains(search) || a.LastName.Contains(search)) || b.Editorial.Name.Contains(search) || b.Editorial.Location.Contains(search))
                          select b).Include("Editorial").Include("Authors");
             var sorted = asc?query.OrderBy(SortFunction(sortBy)):query.OrderByDescending(SortFunction(sortBy));
-            return new Paginator<Book>() { Data = sorted.Skip(PageSize * Page).Take(PageSize), PageSize=PageSize, Page=Page};
+            var TotalCount = await query.CountAsync();
+            return new Paginator<Book>() { Data = sorted.Skip(PageSize * Page).Take(PageSize), PageSize=PageSize, Page=Page, TotalCount=TotalCount, TotalPages=TotalCount/PageSize};
         }
  
 
