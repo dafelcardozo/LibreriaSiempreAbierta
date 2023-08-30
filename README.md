@@ -2,7 +2,7 @@
 
 This repository implements mi solution to a .Net technical test of my abilities in .Net, C# and Javascript for Browser Travel Solutions.
 
-The application is currently deployed here: https://avenue1720230320150946.azurewebsites.net/
+The application is currently deployed here: 
 
 Avenue17 is an aplication for libraries management, and includes functions of listing and registering books, authors and publishers.
 
@@ -31,13 +31,11 @@ The view layer uses several third-party Javascript libraries (agradecimientos):
 
 Este repositorio implementa mi solución a una prueba técnica de mis habilidades en ASP .Net, C# y Javascript para Browser Travel Solutions.
 
-La aplicación se encuentra desplegada en esta URL: https://avenue1720230320150946.azurewebsites.net/
+La aplicación se encuentra desplegada en esta URL: 
 
 Avenue17 es una aplicación de gestión para librerías, y tiene funcionalidades de catálogo y registro de libros, autores y editoriales.
 
 ## Despliegue e instalación local
-
-Avenue17 está desplegada en Azure, en esta dirección: https://avenue1720230320150946.azurewebsites.net/
 
 Para correrla localmente, descárguela con Visual Studio 2022 y configure la cadena de conexión con la base de datos, _cadenaLibreria_. Usa la versión de .Net Framework 7. 
 
