@@ -11,27 +11,25 @@ namespace Avenue17
         public class IndustryIdentifier
         {
             private static readonly Regex regex = new Regex("\\d*");
-            public string Identifier { get; set; }
+            public string Identifier { get; set; } = "";
 
             public long? ParseIsbn
             {
                 get
                 {
-                    MatchCollection matches = regex.Matches(Identifier);
-                    if (matches.IsNullOrEmpty())
-                        return null;
-                    foreach (var m in matches.AsEnumerable())
+                    try
                     {
-                        string v = m.Value;
-                        if (v.IsNullOrEmpty())
-                            continue;
-                        return long.Parse(v);
+                        MatchCollection matches = regex.Matches(Identifier);
+                        return matches != null && !matches.IsNullOrEmpty() ? (from m in matches where !m.Value.IsNullOrEmpty() select long.Parse(m.Value)).First() : null;
+                    } catch (InvalidOperationException e)
+                    {
+                        Console.Write(e);
+                        return 0;
                     }
-                    return null;
                 }
             }
         }
-        
+       
 
         public class VolumeInfo
         {
@@ -52,37 +50,28 @@ namespace Avenue17
         public class Book2
         {
             public VolumeInfo VolumeInfo { get; set; }
-            public string Category { get; set; }
+            public string Category { get; set; } = "";
         }
         public class Volume
         {
-            public List<Book2> items { get; set; }
+            public List<Book2> Items { get; set; } = new List<Book2>();
         }
         public WebCrawler(BooksContext context)
         {
             _context = context;
         }
-        private readonly string[] categories = @"fiction,romance,sex,sf,science-fiction,science,advice,economics,history,politics,geography,war,mathematics,french,colombia,spain,russia,paint,physics,medicine,industry,planes,design,architecture,web,programming".Split(",");
+        private readonly List<string> categories = @"fiction,romance,sex,sf,science-fiction,science,advice,economics,history,politics,geography,war,mathematics,french,colombia,spain,russia,paint,physics,medicine,industry,planes,design,architecture,web,programming".Split(",").ToList();
 
         public async Task<List<Book2>> DownloadGoogleBooks()
         {
-            var books = new List<Book2>();
-
-            using (var wc = new HttpClient())
+            using var wc = new HttpClient();
+            var tasks = categories.ConvertAll(async cat =>
             {
-                foreach (string cat in categories)
-                {
-                    string url = $"https://www.googleapis.com/books/v1/volumes?q=subject:{cat}&maxResults=40";
-                    //var response = await wc.GetAsync(url);
-                    //var s = await response.Content.ReadAsStringAsync();
-                    //File.AppendAllText(@".\WebCrawlerDebug.json", s);
-                    var response = await wc.GetFromJsonAsync<Volume>(url) ?? throw new Exception();
-                    response.items.ForEach(i => i.Category = cat);
-                    books.AddRange(response.items);
-                }
-            }
-            Console.WriteLine($"Initial books count: {books.Count}");
-            return books;
+                string url = $"https://www.googleapis.com/books/v1/volumes?q=subject:{cat}&maxResults=40";
+                var response = await wc.GetFromJsonAsync<Volume>(url) ?? throw new Exception();
+                return response.Items;
+            });
+            return (await Task.WhenAll(tasks)).SelectMany(x => x).ToList();
         }
         private string Truncate(string s, int maxLength)
         {
@@ -94,7 +83,7 @@ namespace Avenue17
         {
             var books = (await DownloadGoogleBooks()).FindAll(b => b.VolumeInfo.IndustryIdentifiers.Any());
             var distinctPublishers = (from b in books select Truncate(CultureInfo.InvariantCulture.TextInfo.ToTitleCase(b.VolumeInfo.Publisher.ToLower()), 45)).Distinct().Order();
-            _context.Editorial.AddRange(from p in distinctPublishers select new Editorial() { Name = p, Location = "Somewhere on the web" });
+            _context.Editorial.AddRange(from p in distinctPublishers select new Editorial() { Name = p, Location = "" });
             _context.SaveChanges();
 
             var distinctAuthors = (from b in books from a in b.VolumeInfo.Authors select CultureInfo.InvariantCulture.TextInfo.ToTitleCase(a.ToLower())).Distinct();

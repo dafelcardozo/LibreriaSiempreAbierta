@@ -1,3 +1,4 @@
+
 using Avenue17;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,12 +21,11 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// Enable first load Google Books by defining this variable
+// Query and load a Google Books dataset by defining this variable
 #if FIRST_LOAD
 using (var scope = app.Services.CreateScope())
 {
     var crawler = scope.ServiceProvider.GetRequiredService<WebCrawler>();
-    //await crawler.DownloadGoogleBooks();
     await crawler.SaveBooks();
 }
 #endif
